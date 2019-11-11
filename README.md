@@ -1,6 +1,6 @@
 # APO_Project
-Due 12 Dec 2019 (Thursday), 4.30pm
-- Submit your report (one report per pair) on Blackboard by 4.30pm on Thursday 12
+**Due 12 Dec 2019 (Thursday), 4.30pm**
+- Submit your report (one report per pair) on Blackboard 
 - Send your GAMS file to mohamed.maher18@imperial.ac.uk
   
 1. Propose a mathematical formulation for the design problem, implement it in GAMS
