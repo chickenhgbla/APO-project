@@ -11,3 +11,46 @@ commenting on the suitability of the compounds you have found.
 formulation. Do not implement them.
 4. Write a report of no more than 8 pages on your findings. Use margins of 2.5 cm
 throughout, a line spacing of 1.2 and 11 point Arial font.
+
+**GAMS script outline:**
+
+obj func
+
+comparison wif HFC constraints
+property relation constraints
+
+vap pressure --> atm, condensing
+Hvap --> evap temp
+CpL --> ave process temp
+
+molecule feasibility constraints (higher order)
+integer cut
+
+UNIFAC
+cost of molecule production
+environment effect
+
+decide on solver
+
+**Report outline:**
+
+intro of problem
+
+intro of refrigation cycle (conditions)
+
+math formulation
+choice of property relation constraints (compare with experimental data)
+
+results and discussion
+
+investigation of refrigerants 
+
+extra constraints
+1. Ozone depletion potential
+2. Health hazard index
+3. Flammability 
+
+conclusion
+
+**To-DO:**
+
