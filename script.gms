@@ -4,7 +4,8 @@ Set
     i 'Types of properties'             / vp_e 'Vapour pressure @ evaporating temperature',
                                           vp_c 'Vapour pressure @ condensing temperature',
                                           h_vap 'Heat of vaporisation @ evaporating temperature',
-                                          cp_l 'Liquid heat capacity @ 'average process temperature' /
+                                          cp_l 'Liquid heat capacity @ 'average process temperature'
+                                          h_vap298 'Vapour pressure @ 298K'/
     g 'group type'                      /  CH3, CH2 /
     par 'paramter'                      /  v 'Valency',
                                            t 'Type; 1 = General, 2 = Unsaturated, 3 = Aromatic',
@@ -25,10 +26,11 @@ Table
 
 
 Parameter
-    T(t)    Temperatures in K           /e 273, c 316, m 294/
+    T(t)    Temperatures in K           /e 273, c 316, m 294, s 298/
     P(p)    Pressures in bar            /atm 1.1, c 14/
-    hfc(i)  Properties of R134a         /vp_e 0, vp_c 0, h_vap 10, cp_l 10/;
-
+    hfc(i)  Properties of R134a         /vp_e 0, vp_c 0, h_vap 10, cp_l 10/
+    R       Gas constant                /8.3145/; 
+    
 Variable
     pi(i)   Properties
     n(g)    Number of selected units of group type g
@@ -48,7 +50,11 @@ Equation
     M   Relate m to binary molecule types
     ARO Relate indicator variable m to number of aromatic groups
     octet   Octet rule - so that there is no free bonds
-    unphysical(j)  To prevent unphysical combinations;
+    unphysical(j)  To prevent unphysical combinations
+    newcp_l liquid heat capacity of new refrigerant at Tm
+    newh_vap298 heat of vaporisation of new refrigerant at 298K
+    newh_vap heat of vaporisation of new refrigerant at Te
+    Tcrit critical temperature
     
 OBJ..       z =E= sum(r, y(r)*fc(r) + vc(r)*x(r));
 
@@ -68,9 +74,17 @@ ARO..         sum(g,n(g) $ (info('t',g) = 2)) - 6*y('m') - 10*y('b') =E= 0;
 
 octet..       sum(g, (2-info(g,'v'))*n(g) - 2*m =E= 0;
 
-unphysical(j)..  n(j)*(info(j,'v') - 1) + 2 - sum(g,n(g)) =L= 0;  
+unphysical(j)..  n(j)*(info(j,'v') - 1) + 2 - sum(g,n(g)) =L= 0;
 
-sadasd
+newcp_l..     pi('cp_l') =e= R*(sum(g,n(g)*(info(g,'a'))) + sum(g,n(g)*(info(g,'b')))*0.01*T(m) + sum(g,n(g)*info(g,'d'))*(0.01*T(m))**2);
+
+newh_vap298.. pi('h_vap298') =e= 6.829 + sum(g,n(g)*(info(g,'hv1k')));
+
+newh_vap..    pi('h_vap') =e= pi('h_vap298')*((1-(T(e)/T(crit)))/(1-(T(s)/T(crit))))**0.375;
+
+
+
+
 
 Model CAMD / all /;
 
