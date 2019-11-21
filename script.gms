@@ -5,7 +5,12 @@ Set
                                           vp_c 'Vapour pressure @ condensing temperature',
                                           h_vap 'Heat of vaporisation @ evaporating temperature',
                                           cp_l 'Liquid heat capacity @ 'average process temperature'
-                                          h_vap298 'Vapour pressure @ 298K'/
+                                          h_vap298 'Vapour pressure @ 298K'
+                                          Tcrit 'Critical temperature'
+                                          Pcrit 'Critical pressure'
+                                          vp_er 'Vapour pressure @ reduced evaporating temperature'
+                                          vp_cr 'Vapour pressure @ reduced condensing temperature'
+                                          Tb 'Boiling temperature'/
     g 'group type'                      /  CH3, CH2 /
     par 'paramter'                      /  v 'Valency',
                                            t 'Type; 1 = General, 2 = Unsaturated, 3 = Aromatic',
@@ -55,8 +60,10 @@ Variable
     pi(i)   Property value
     n(g)    Number of selected units of group type g
     m       Molecule type 1 = acyclic, 0 = monocyclic, -1 = bicyclic
-    z       Obj function;
-
+    z       Obj function
+    k       Vap pressure eq of k
+    h       Vap pressure eq of h
+    G       Vap pressure eq of G;
 Positive Variable x(r);
 Binary Variable y(mt);
 
@@ -75,6 +82,15 @@ Equation
     newh_vap298 heat of vaporisation of new refrigerant at 298K
     newh_vap heat of vaporisation of new refrigerant at Te
     Tcrit critical temperature
+    Pcrit critical pressure
+    Tb boiling temperature
+    k vapour pressure eq1
+    h vapour pressure eq2
+    G vapour pressure eq3
+    ln_newvp_re vapour presure of new refrigerant at Te over Tcrit
+    ln_newvp_rc vapour pressure of new refrigerant at Tc over Tcrit
+    newvp_e vapour pressure of new refrigerant at Te
+    newvp_c vapour pressure of new refrigerant at Tc
     
 OBJ..       z =E= sum(r, y(r)*fc(r) + vc(r)*x(r));
 
@@ -100,8 +116,27 @@ newcp_l..     pi('cp_l') =e= R*(sum(g,n(g)*(info(g,'a'))) + sum(g,n(g)*(info(g,'
 
 newh_vap298.. pi('h_vap298') =e= 6.829 + sum(g,n(g)*(info(g,'hv1k')));
 
-newh_vap..    pi('h_vap') =e= pi('h_vap298')*((1-(T(e)/T(crit)))/(1-(T(s)/T(crit))))**0.375;
+newh_vap..    pi('h_vap') =e= pi('h_vap298')*((1-(T(e)/pi('Tcrit')))/(1-(T(s)/pi('Tcrit'))))**0.375;
 
+Tcrit..       pi('Tcrit') =e= 181.128*loge(sum(g,n(g)*info(g,'tc1k')));
+
+Pcrit..       pi('Pcrit') =e= 1.3705 + (sum(g,n(g)*info(g,'pc1k')) + 0.10022)**(-2);
+
+Tb..          pi('Tb') =e= 204.359*loge((sum(g,n(g)*info(g,'tb1k')));
+
+k..           k =e= ((h/G) - (1 + (pi('Tb')/pi(T'crit'))))/((3 + (pi('Tb')/pi(T'crit')))* (1 - (pi('Tb')/pi(T'crit')))**2);
+
+h..           h =e= (pi('Tb')/pi(T'crit'))*((loge(pi('Pcrit'))/1.01325)/(1 - (pi('Tb')/pi(T'crit')));
+
+G..           G =e= 0.4835 + 0.4605*h;
+
+ln_newvp_er..  loge(pi('vp_er')) =e= (-G/(T(e)/pi('Tcrit')))*(1 - (T(e)/pi('Tcrit'))**2 + k*(3 + (T(e)/pi('Tcrit')))*(1 - (T(e)/pi('Tcrit')))**3);
+
+ln_newvp_cr..  loge(pi('vp_er')) =e= (-G/(T(c)/pi('Tcrit')))*(1 - (T(c)/pi('Tcrit'))**2 + k*(3 + (T(c)/pi('Tcrit')))*(1 - (T(c)/pi('Tcrit')))**3);
+
+newvp_e..      pi('vp_e') =e= exp(loge(pi('vp_er')));
+
+newvp_c..      pi('vp_c') =e= exp(loge(pi('vp_cr')));
 
 Model CAMD / all /;
 
