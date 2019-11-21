@@ -70,7 +70,7 @@ octet..       sum(g, (2-info(g,'v'))*n(g) - 2*m =E= 0;
 
 unphysical(j)..  n(j)*(info(j,'v') - 1) + 2 - sum(g,n(g)) =L= 0;  
 
-
+sadasd
 
 Model CAMD / all /;
 
