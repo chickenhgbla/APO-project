@@ -9,7 +9,13 @@ Set
     g 'group type'                      /  CH3, CH2 /
     par 'paramter'                      /  v 'Valency',
                                            t 'Type; 1 = General, 2 = Unsaturated, 3 = Aromatic',
-                                           c       /
+                                           a 'cp_l parameter 1'
+                                           b 'cp_l parameter 2'
+                                           d 'cp_l parameter 3'
+                                           hv1k 'CAG parameter for h_vap'
+                                           tc1k 'CAG parameter for critical temperature'                                        
+                                           tb1k 'CAG parameter for normal boiling temperature'    
+                                           pc1k 'CAG parameter for critical pressure'    /
     mt 'Molecule type'                  /  a 'acyclic', m 'monocyclic', b 'bicyclic'/
               
            ;
@@ -18,11 +24,25 @@ Alias (j,g)
          
 Table
             info(g,par) 'Information about each group type'
-         v    t  H2O  N  N2  NH  NO  O  O2  OH
+         v    t    a    b   d   hv1k    tc1k    pc1k 
    CH3   1    2       
    CH2   1    1        
    c           
-                                                ;
+                                               
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ;
 
 
 Parameter
@@ -32,7 +52,7 @@ Parameter
     R       Gas constant                /8.3145/; 
     
 Variable
-    pi(i)   Properties
+    pi(i)   Property value
     n(g)    Number of selected units of group type g
     m       Molecule type 1 = acyclic, 0 = monocyclic, -1 = bicyclic
     z       Obj function;
@@ -70,7 +90,7 @@ MT..          sum(mt,y) =E= 1;
 
 M..           m - (y('a') - y('b')) =E= 0;
 
-ARO..         sum(g,n(g) $ (info('t',g) = 2)) - 6*y('m') - 10*y('b') =E= 0;
+ARO..         sum(g,n(g) $ (info(g,'t') = 3)) - 6*y('m') - 10*y('b') =E= 0;
 
 octet..       sum(g, (2-info(g,'v'))*n(g) - 2*m =E= 0;
 
@@ -81,9 +101,6 @@ newcp_l..     pi('cp_l') =e= R*(sum(g,n(g)*(info(g,'a'))) + sum(g,n(g)*(info(g,'
 newh_vap298.. pi('h_vap298') =e= 6.829 + sum(g,n(g)*(info(g,'hv1k')));
 
 newh_vap..    pi('h_vap') =e= pi('h_vap298')*((1-(T(e)/T(crit)))/(1-(T(s)/T(crit))))**0.375;
-
-
-
 
 
 Model CAMD / all /;
