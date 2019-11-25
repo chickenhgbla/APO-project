@@ -1,10 +1,10 @@
 Set
-    t 'Process temperature conditions'  / e 'Evaporating temperature', c 'Condensing temperature', m 'Average process temperature', s 'Standard temperature 298'/ 
-    p 'Process pressure conditions'     / atm 'Atmospheric', c 'Condensing'/
+    temp 'Process temperature conditions'  / e 'Evaporating temperature', c 'Condensing temperature', m 'Average process temperature', s 'Standard temperature 298'/ 
+    pr 'Process pressure conditions'     / atm 'Atmospheric', c 'Condensing'/
     i 'Types of properties'             / vp_e 'Vapour pressure @ evaporating temperature',
                                           vp_c 'Vapour pressure @ condensing temperature',
                                           h_vap 'Heat of vaporisation @ evaporating temperature',
-                                          cp_l 'Liquid heat capacity @ 'average process temperature'/
+                                          cp_l 'Liquid heat capacity @ average process temperature' /
                                                                                
     g 'group type'                      /  CH3, CH2, CH, C, CH2--CH, CH--CH, CH2--C, CH--C, C--C,
                                            CH2--C--CH, ACH, AC, ACCH3, ACCH2, ACCH, OH, ACOH,
@@ -30,8 +30,7 @@ Alias (j,g)
 Table
             info(g,par) 'Information about each group type'
             
-Property   valency type tb1k   tc1k    pc1k    w1k    hv1k     cpa1k       cpb1k       cpc1k      
-units                   k      k       bar^0.5        kjmol^-1 jmol^-1k^-1 jmol^-1k^-1 jmol^-1k^-1
+           v       t    tb1k   tc1k    pc1k    w1k    hv1k     cpa1k       cpb1k       cpc1k      
 CH3        1       1    0.8894 1.6781  0.0199  0.296  4.116    35.1152     39.5923     -9.9232    
 CH2        2       1    0.9225 3.492   0.0106  0.147  4.65     22.6346     45.0933     -15.7033   
 CH         3       1    0.6033 4.033   0.0013  -0.071 2.771    8.9272      59.9786     -29.5143   
@@ -65,19 +64,18 @@ COOH       1       1    5.8337 23.7593 0.0115  0.57   43.046   46.5577     48.23
 I          1       1    3.665  17.3947 0.0028  0.233  14.364   29.1815     -9.7846     3.4554     
 Br         1       1    2.6495 10.5371 -0.0018 0.278  11.423   28.026      -7.1651     2.4332     
 CH---C     1       2    2.3678 7.5433  0.0148  0.618  7.751    45.9768     20.6417     -8.3297    
-CH2S       2       1    3.6763 17.7916 0.0111  0.438  17.117   45.0314     55.1432     -18.7776                       
- ;
+CH2S       2       1    3.6763 17.7916 0.0111  0.438  17.117   45.0314     55.1432     -18.7776                       ;
 
 Parameter
-    T(t)    Temperatures in K           /e 273, c 316, m 294, s 298/
-    P(p)    Pressures in bar            /atm 1.1, c 14/
+    T(temp)    Temperatures in K        /e 273, c 316, m 294, s 298/
+    P(pr)    Pressures in bar            /atm 1.1, c 14/
     hfc(i)  Properties of R134a         //
     R       Gas constant                /8.3145/; 
     
 Variable
     pi(i)   Property value
     n(g)    Number of selected units of group type g
-    m       Molecule type 1 = acyclic, 0 = monocyclic, -1 = bicyclic
+    m       'Molecule type 1 = acyclic, 0 = monocyclic, -1 = bicyclic'
     z       Obj function
     
     Tb      Boiling temperature
@@ -86,7 +84,7 @@ Variable
     
     k       k for vap pressure calculation
     h       h for vap pressure calculation
-    G       G for vap pressure calculation
+    Gvap    G for vap pressure calculation
     vp_er   Vapour pressure @ reduced Te
     vp_cr   Vapour pressure @ reduced Tc
     
@@ -97,7 +95,7 @@ Variable
     cp_residual Residual heat capacity @ Tm
     cp_ideal Ideal gas heat capacity @ Tm ;
     
-Positive Variable x(r);
+*Positive Variable x(r);
 Binary Variable y(mt);
 
 Equation
@@ -106,8 +104,8 @@ Equation
     pressure2 vapour pressure at condensing temperature is less than or equal to 14 bar
     compare1 h_vap to be greater than or equal to that of R134a
     compare2 cp_l to be less than or equal to that of R134a
-    MT  Only can be 1 molecule type 
-    M   Relate m to binary molecule types
+    MT_eq  Only can be 1 molecule type 
+    M_eq   Relate m to binary molecule types
     ARO Relate indicator variable m to number of aromatic groups
     octet   Octet rule - so that there is no free bonds
     unphysical(j)  To prevent unphysical combinations
@@ -134,7 +132,7 @@ Equation
     newcp_l liquid heat capacity of new refrigerant at Tm
     
     
-OBJ..       z =E= sum(r, y(r)*fc(r) + vc(r)*x(r));
+OBJ..       z;
 
 pressure1..   P('atm') - pi('vp_e') =L= 0;
 
@@ -144,51 +142,51 @@ compare1..    hfc('h_vap') - pi('h_vap') =L= 0;
 
 compare2..    pi('cp_l') - hfc('cp_l') =L= 0;   
 
-MT..          sum(mt,y) =E= 1;
+MT_eq..          sum(mt,y(mt)) =E= 1;
 
-M..           m - (y('a') - y('b')) =E= 0;
+M_eq..           m - (y('a') - y('b')) =E= 0;
 
 ARO..         sum(g,n(g) $ (info(g,'t') = 3)) - 6*y('m') - 10*y('b') =E= 0;
 
-octet..       sum(g, (2-info(g,'v'))*n(g) - 2*m =E= 0;
+octet..       sum(g, (2-info(g,'v'))*n(g)) - 2*m =E= 0;
 
 unphysical(j)..  n(j)*(info(j,'v') - 1) + 2 - sum(g,n(g)) =L= 0;
 
 
-Tb_eq..       Tb =e= 204.359*loge((sum(g,n(g)*info(g,'tb1k')));
+Tb_eq..       Tb =e= 204.359*log((sum(g,n(g)*info(g,'tb1k'))));
 
-Tcrit_eq..    Tcrit =e= 181.128*loge(sum(g,n(g)*info(g,'tc1k')));
+Tcrit_eq..    Tcrit =e= 181.128*log(sum(g,n(g)*info(g,'tc1k')));
 
 Pcrit_eq..    Pcrit =e= 1.3705 + (sum(g,n(g)*info(g,'pc1k')) + 0.10022)**(-2);
 
 
-k_eq..           k =e= ((h/G) - (1 + Tb/Tcrit))/((3 + Tb/Tcrit)* (1 - Tb/Tcrit)**2);
+k_eq..           k =e= ((h/Gvap) - (1 + Tb/Tcrit))/((3 + Tb/Tcrit)* (1 - Tb/Tcrit)**2);
 
-h_eq..           h =e= (Tb/Tcrit)*((loge(Pcrit)/1.01325)/(1 - Tb/Tcrit));
+h_eq..           h =e= (Tb/Tcrit)*((log(Pcrit)/1.01325)/(1 - Tb/Tcrit));
 
-G_eq..           G =e= 0.4835 + 0.4605*h;
+G_eq..           Gvap =e= 0.4835 + 0.4605*h;
 
-ln_newvp_er_eq..  loge(vp_er) =e= (-G/(T(e)/Tcrit))*(1 - (T(e)/Tcrit)**2 + k*(3 + (T(e)/Tcrit))*(1 - (T(e)/Tcrit))**3);
+ln_newvp_er_eq..  log(vp_er) =e= (-Gvap/(T('e')/Tcrit))*(1 - (T('e')/Tcrit)**2 + k*(3 + (T('e')/Tcrit))*(1 - (T('e')/Tcrit))**3);
 
-ln_newvp_cr_eq..  loge(vp_cr) =e= (-G/(T(c)/Tcrit))*(1 - (T(c)/Tcrit)**2 + k*(3 + (T(c)/Tcrit))*(1 - (T(c)/Tcrit))**3);
+ln_newvp_cr_eq..  log(vp_cr) =e= (-Gvap/(T('c')/Tcrit))*(1 - (T('c')/Tcrit)**2 + k*(3 + (T('c')/Tcrit))*(1 - (T('c')/Tcrit))**3);
 
-newvp_e..      pi('vp_e') =e= exp(loge(vp_er))*Pcrit;
+newvp_e..      pi('vp_e') =e= exp(log(vp_er))*Pcrit;
 
-newvp_c..      pi('vp_c') =e= exp(loge(vp_cr))*Pcrit;
+newvp_c..      pi('vp_c') =e= exp(log(vp_cr))*Pcrit;
 
 
 newh_vap298_eq.. h_vap298 =e= 6.829 + sum(g,n(g)*(info(g,'hv1k')));
 
-newh_vap..    pi('h_vap') =e= h_vap298*((1-(T(e)/Tcrit))/(1-(T(s)/Tcrit)))**0.375;
+newh_vap..    pi('h_vap') =e= h_vap298*((1-(T('e')/Tcrit))/(1-(T('s')/Tcrit)))**0.375;
 
 
-theta_eq..    theta =e= (T(m) - 298)/700;
+theta_eq..    theta =e= (T('m') - 298)/700;
 
-omega_eq..    omega =e= 0.4085*(loge((sum(g,n(g)*w1k)) + 1.1507)**(1/0.5050));
+omega_eq..    omega =e= 0.4085*(log((sum(g,n(g)*info(g, 'w1k'))) + 1.1507)**(1/0.5050));
 
-residualcp_eq..  cp_residual =e= R*(1.586 + 0.49/(1 - ((T(m))/Tcrit)) + omega*(4.2775 + 6.3*(1 - ((T(m))/Tcrit))**(1/3)/((T(m))/Tcrit) + 0.4355/(1 - ((T(m))/Tcrit))));
+residualcp_eq..  cp_residual =e= R*(1.586 + 0.49/(1 - ((T('m'))/Tcrit)) + omega*(4.2775 + 6.3*(1 - ((T('m'))/Tcrit))**(1/3)/((T('m'))/Tcrit) + 0.4355/(1 - ((T('m'))/Tcrit))));
 
-idealgascp_eq..  cp_ideal =e= ((sum(g,n(g)*info(g,'cpa1k')) - 19.7779) + ((sum(g,n(g)*info(g,'cpb1k'))) + 22.5981)*theta + ((sum(g,n(g)*info(g,'cpc1k'))) - 10.7983)*(theta)**2)x;
+idealgascp_eq..  cp_ideal =e= ((sum(g,n(g)*info(g,'cpa1k')) - 19.7779) + ((sum(g,n(g)*info(g,'cpb1k'))) + 22.5981)*theta + ((sum(g,n(g)*info(g,'cpc1k'))) - 10.7983)*(theta)**2);
 
 newcp_l..     pi('cp_l') =e= cp_residual + cp_ideal;
 
