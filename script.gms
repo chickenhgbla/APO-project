@@ -1,5 +1,5 @@
 Set
-    t 'Process temperature conditions'  / e 'Evaporating temperature', c 'Condensing temperature', m 'Average process temperature'/ 
+    t 'Process temperature conditions'  / e 'Evaporating temperature', c 'Condensing temperature', m 'Average process temperature', s 'Standard temperature 298'/ 
     p 'Process pressure conditions'     / atm 'Atmospheric', c 'Condensing'/
     i 'Types of properties'             / vp_e 'Vapour pressure @ evaporating temperature',
                                           vp_c 'Vapour pressure @ condensing temperature',
@@ -188,7 +188,7 @@ omega_eq..    omega =e= 0.4085*(loge((sum(g,n(g)*w1k)) + 1.1507)**(1/0.5050));
 
 residualcp_eq..  cp_residual =e= R*(1.586 + 0.49/(1 - ((T(m))/Tcrit)) + omega*(4.2775 + 6.3*(1 - ((T(m))/Tcrit))**(1/3)/((T(m))/Tcrit) + 0.4355/(1 - ((T(m))/Tcrit))));
 
-idealgascp_eq..  cp_ideal =e= ((sum(g,n(g)*info(g,'cpa1k')) - 19.7779) + ((sum(g,n(g)*info(g,'cpb1k'))) + 22.5981)*theta + ((sum(g,n(g)*info(g,'cpc1k'))) - 10.7983)*(theta)**2);
+idealgascp_eq..  cp_ideal =e= ((sum(g,n(g)*info(g,'cpa1k')) - 19.7779) + ((sum(g,n(g)*info(g,'cpb1k'))) + 22.5981)*theta + ((sum(g,n(g)*info(g,'cpc1k'))) - 10.7983)*(theta)**2)x;
 
 newcp_l..     pi('cp_l') =e= cp_residual + cp_ideal;
 
