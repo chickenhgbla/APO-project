@@ -11,7 +11,9 @@ Set
                                           Pcrit 'Critical pressure'
                                           vp_er 'Vapour pressure @ reduced evaporating temperature'
                                           vp_cr 'Vapour pressure @ reduced condensing temperature'
-                                          Tb 'Boiling temperature'/
+                                          Tb 'Boiling temperature'
+                                          cp_residual 'Residual heat capacity'
+                                          cp_ideal 'Ideal gas heat capacity'/
     g 'group type'                      /  CH3, CH2 /
     par 'paramter'                      /  v 'Valency',
                                            t 'Type; 1 = General, 2 = Unsaturated, 3 = Aromatic',
@@ -126,6 +128,10 @@ Equation
     ARO Relate indicator variable m to number of aromatic groups
     octet   Octet rule - so that there is no free bonds
     unphysical(j)  To prevent unphysical combinations
+    residualcp residual heat capacity of new refrigerant at Tm
+    idealgascp ideal gas heat capacity at Tm
+    theta_eq theta to be used in CaG cp equation 
+    omega_eq equation for omega accentric factor
     newcp_l liquid heat capacity of new refrigerant at Tm
     newh_vap298 heat of vaporisation of new refrigerant at 298K
     newh_vap heat of vaporisation of new refrigerant at Te
@@ -160,7 +166,19 @@ octet..       sum(g, (2-info(g,'v'))*n(g) - 2*m =E= 0;
 
 unphysical(j)..  n(j)*(info(j,'v') - 1) + 2 - sum(g,n(g)) =L= 0;
 
-newcp_l..     pi('cp_l') =e= R*(sum(g,n(g)*(info(g,'a'))) + sum(g,n(g)*(info(g,'b')))*0.01*T(m) + sum(g,n(g)*info(g,'d'))*(0.01*T(m))**2);
+
+
+residualcp..  pi('cp_residual') =e= R*(1.586 + 0.49/(1 - ((T(m))/pi('Tcrit'))) + omega*(4.2775 + 6.3*(1 - ((T(m))/pi('Tcrit')))**(1/3)/((T(m))/pi('Tcrit')) + 0.4355/(1 - ((T(m))/pi('Tcrit')))));
+
+idealgascp..  pi('cp_ideal') =e= ((sum(g,n(g)*info(g,'cpa1k')) - 19.7779) + ((sum(g,n(g)*info(g,'cpb1k'))) + 22.5981)*theta + ((sum(g,n(g)*info(g,'cpc1k'))) - 10.7983)*(theta)**2);
+
+theta_eq..    theta =e= (T(m) - 298)/700;
+
+newcp_l..     pi('cp_l') =e= pi('cp_residual') + pi('cp_ideal')
+
+omega_eq..    omega =e= 0.4085*(loge((sum(g,n(g)*w1k)) + 1.1507)**(1/0.5050));
+
+*Ruzicka method newcp_l..     pi('cp_l') =e= R*(sum(g,n(g)*(info(g,'a'))) + sum(g,n(g)*(info(g,'b')))*0.01*T(m) + sum(g,n(g)*info(g,'d'))*(0.01*T(m))**2);
 
 newh_vap298.. pi('h_vap298') =e= 6.829 + sum(g,n(g)*(info(g,'hv1k')));
 
