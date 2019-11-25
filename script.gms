@@ -4,16 +4,7 @@ Set
     i 'Types of properties'             / vp_e 'Vapour pressure @ evaporating temperature',
                                           vp_c 'Vapour pressure @ condensing temperature',
                                           h_vap 'Heat of vaporisation @ evaporating temperature',
-                                          cp_l 'Liquid heat capacity @ 'average process temperature'
-                                          cp_0 'Ideal gas heat capacity @ average process temperature',
-                                          h_vap298 'Vapour pressure @ 298K'
-                                          Tcrit 'Critical temperature'
-                                          Pcrit 'Critical pressure'
-                                          vp_er 'Vapour pressure @ reduced evaporating temperature'
-                                          vp_cr 'Vapour pressure @ reduced condensing temperature'
-                                          Tb 'Boiling temperature'
-                                          cp_residual 'Residual heat capacity'
-                                          cp_ideal 'Ideal gas heat capacity'/
+                                          cp_l 'Liquid heat capacity @ 'average process temperature'/
                                                                                
     g 'group type'                      /  CH3, CH2, CH, C, CH2--CH, CH--CH, CH2--C, CH--C, C--C,
                                            CH2--C--CH, ACH, AC, ACCH3, ACCH2, ACCH, OH, ACOH,
@@ -88,9 +79,23 @@ Variable
     n(g)    Number of selected units of group type g
     m       Molecule type 1 = acyclic, 0 = monocyclic, -1 = bicyclic
     z       Obj function
-    k       Vap pressure eq of k
-    h       Vap pressure eq of h
-    G       Vap pressure eq of G;
+    
+    Tb      Boiling temperature
+    Tcrit   Critical temperature
+    Pcrit   Critical pressure
+    
+    k       k for vap pressure calculation
+    h       h for vap pressure calculation
+    G       G for vap pressure calculation
+    vp_er   Vapour pressure @ reduced Te
+    vp_cr   Vapour pressure @ reduced Tc
+    
+    h_vap298 Vapour pressure @ 298K 
+    
+    theta   Theta to be used in CaG cp calculation @ Tm
+    omega   Accentric factor to be used in cp calculation
+    cp_residual Residual heat capacity @ Tm
+    cp_ideal Ideal gas heat capacity @ Tm ;
     
 Positive Variable x(r);
 Binary Variable y(mt);
@@ -106,23 +111,28 @@ Equation
     ARO Relate indicator variable m to number of aromatic groups
     octet   Octet rule - so that there is no free bonds
     unphysical(j)  To prevent unphysical combinations
-    residualcp residual heat capacity of new refrigerant at Tm
-    idealgascp ideal gas heat capacity at Tm
-    theta_eq theta to be used in CaG cp equation 
-    omega_eq equation for omega accentric factor
-    newcp_l liquid heat capacity of new refrigerant at Tm
-    newh_vap298 heat of vaporisation of new refrigerant at 298K
-    newh_vap heat of vaporisation of new refrigerant at Te
-    Tcrit critical temperature
-    Pcrit critical pressure
-    Tb boiling temperature
-    k vapour pressure eq1
-    h vapour pressure eq2
-    G vapour pressure eq3
-    ln_newvp_re vapour presure of new refrigerant at Te over Tcrit
-    ln_newvp_rc vapour pressure of new refrigerant at Tc over Tcrit
+    
+    Tb_eq boiling temperature
+    Tcrit_eq critical temperature
+    Pcrit_eq critical pressure
+    
+    k_eq vapour pressure eq1
+    h_eq vapour pressure eq2
+    G_eq vapour pressure eq3
+    ln_newvp_er_eq vapour presure of new refrigerant at Te over Tcrit
+    ln_newvp_cr_eq vapour pressure of new refrigerant at Tc over Tcrit
     newvp_e vapour pressure of new refrigerant at Te
     newvp_c vapour pressure of new refrigerant at Tc
+    
+    newh_vap298_eq equation for heat of vaporisation of new refrigerant at 298K
+    newh_vap heat of vaporisation of new refrigerant at Te using Watson eqn
+
+    theta_eq theta to be used in CaG cp equation 
+    omega_eq equation for omega accentric factor
+    residualcp_eq equation for residual heat capacity of new refrigerant at Tm
+    idealgascp_eq equation for ideal gas heat capacity at Tm
+    newcp_l liquid heat capacity of new refrigerant at Tm
+    
     
 OBJ..       z =E= sum(r, y(r)*fc(r) + vc(r)*x(r));
 
@@ -145,42 +155,46 @@ octet..       sum(g, (2-info(g,'v'))*n(g) - 2*m =E= 0;
 unphysical(j)..  n(j)*(info(j,'v') - 1) + 2 - sum(g,n(g)) =L= 0;
 
 
+Tb_eq..       Tb =e= 204.359*loge((sum(g,n(g)*info(g,'tb1k')));
 
-residualcp..  pi('cp_residual') =e= R*(1.586 + 0.49/(1 - ((T(m))/pi('Tcrit'))) + omega*(4.2775 + 6.3*(1 - ((T(m))/pi('Tcrit')))**(1/3)/((T(m))/pi('Tcrit')) + 0.4355/(1 - ((T(m))/pi('Tcrit')))));
+Tcrit_eq..    Tcrit =e= 181.128*loge(sum(g,n(g)*info(g,'tc1k')));
 
-idealgascp..  pi('cp_ideal') =e= ((sum(g,n(g)*info(g,'cpa1k')) - 19.7779) + ((sum(g,n(g)*info(g,'cpb1k'))) + 22.5981)*theta + ((sum(g,n(g)*info(g,'cpc1k'))) - 10.7983)*(theta)**2);
+Pcrit_eq..    Pcrit =e= 1.3705 + (sum(g,n(g)*info(g,'pc1k')) + 0.10022)**(-2);
+
+
+k_eq..           k =e= ((h/G) - (1 + Tb/Tcrit))/((3 + Tb/Tcrit)* (1 - Tb/Tcrit)**2);
+
+h_eq..           h =e= (Tb/Tcrit)*((loge(Pcrit)/1.01325)/(1 - Tb/Tcrit));
+
+G_eq..           G =e= 0.4835 + 0.4605*h;
+
+ln_newvp_er_eq..  loge(vp_er) =e= (-G/(T(e)/Tcrit))*(1 - (T(e)/Tcrit)**2 + k*(3 + (T(e)/Tcrit))*(1 - (T(e)/Tcrit))**3);
+
+ln_newvp_cr_eq..  loge(vp_cr) =e= (-G/(T(c)/Tcrit))*(1 - (T(c)/Tcrit)**2 + k*(3 + (T(c)/Tcrit))*(1 - (T(c)/Tcrit))**3);
+
+newvp_e..      pi('vp_e') =e= exp(loge(vp_er))*Pcrit;
+
+newvp_c..      pi('vp_c') =e= exp(loge(vp_cr))*Pcrit;
+
+
+newh_vap298_eq.. h_vap298 =e= 6.829 + sum(g,n(g)*(info(g,'hv1k')));
+
+newh_vap..    pi('h_vap') =e= h_vap298*((1-(T(e)/Tcrit))/(1-(T(s)/Tcrit)))**0.375;
+
 
 theta_eq..    theta =e= (T(m) - 298)/700;
 
-newcp_l..     pi('cp_l') =e= pi('cp_residual') + pi('cp_ideal')
-
 omega_eq..    omega =e= 0.4085*(loge((sum(g,n(g)*w1k)) + 1.1507)**(1/0.5050));
+
+residualcp_eq..  cp_residual =e= R*(1.586 + 0.49/(1 - ((T(m))/Tcrit)) + omega*(4.2775 + 6.3*(1 - ((T(m))/Tcrit))**(1/3)/((T(m))/Tcrit) + 0.4355/(1 - ((T(m))/Tcrit))));
+
+idealgascp_eq..  cp_ideal =e= ((sum(g,n(g)*info(g,'cpa1k')) - 19.7779) + ((sum(g,n(g)*info(g,'cpb1k'))) + 22.5981)*theta + ((sum(g,n(g)*info(g,'cpc1k'))) - 10.7983)*(theta)**2);
+
+newcp_l..     pi('cp_l') =e= cp_residual + cp_ideal;
+
 
 *Ruzicka method newcp_l..     pi('cp_l') =e= R*(sum(g,n(g)*(info(g,'a'))) + sum(g,n(g)*(info(g,'b')))*0.01*T(m) + sum(g,n(g)*info(g,'d'))*(0.01*T(m))**2);
 
-newh_vap298.. pi('h_vap298') =e= 6.829 + sum(g,n(g)*(info(g,'hv1k')));
-
-newh_vap..    pi('h_vap') =e= pi('h_vap298')*((1-(T(e)/pi('Tcrit')))/(1-(T(s)/pi('Tcrit'))))**0.375;
-
-Tcrit..       pi('Tcrit') =e= 181.128*loge(sum(g,n(g)*info(g,'tc1k')));
-
-Pcrit..       pi('Pcrit') =e= 1.3705 + (sum(g,n(g)*info(g,'pc1k')) + 0.10022)**(-2);
-
-Tb..          pi('Tb') =e= 204.359*loge((sum(g,n(g)*info(g,'tb1k')));
-
-k..           k =e= ((h/G) - (1 + (pi('Tb')/pi(T'crit'))))/((3 + (pi('Tb')/pi(T'crit')))* (1 - (pi('Tb')/pi(T'crit')))**2);
-
-h..           h =e= (pi('Tb')/pi(T'crit'))*((loge(pi('Pcrit'))/1.01325)/(1 - (pi('Tb')/pi(T'crit')));
-
-G..           G =e= 0.4835 + 0.4605*h;
-
-ln_newvp_er..  loge(pi('vp_er')) =e= (-G/(T(e)/pi('Tcrit')))*(1 - (T(e)/pi('Tcrit'))**2 + k*(3 + (T(e)/pi('Tcrit')))*(1 - (T(e)/pi('Tcrit')))**3);
-
-ln_newvp_cr..  loge(pi('vp_er')) =e= (-G/(T(c)/pi('Tcrit')))*(1 - (T(c)/pi('Tcrit'))**2 + k*(3 + (T(c)/pi('Tcrit')))*(1 - (T(c)/pi('Tcrit')))**3);
-
-newvp_e..      pi('vp_e') =e= exp(loge(pi('vp_er')));
-
-newvp_c..      pi('vp_c') =e= exp(loge(pi('vp_cr')));
 
 Model CAMD / all /;
 
