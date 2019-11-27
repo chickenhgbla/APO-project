@@ -1,6 +1,8 @@
 Set
-    temp 'Process temperature conditions'  / e 'Evaporating temperature', c 'Condensing temperature', m 'Average process temperature', s 'Standard temperature 298'/ 
+    temp 'Process temperature conditions'  / e 'Evaporating temperature', c 'Condensing temperature', m 'Average process temperature', s 'Standard temperature 298'/
+    
     pr 'Process pressure conditions'     / atm 'Atmospheric', c 'Condensing'/
+    
     i 'Types of properties'             / vp_e 'Vapour pressure @ evaporating temperature',
                                           vp_c 'Vapour pressure @ condensing temperature',
                                           h_vap 'Heat of vaporisation @ evaporating temperature',
@@ -20,10 +22,16 @@ Set
                                            hv1k 'kjmol^-1, CAG parameter for h_vap298',
                                            cpa1k 'jmol^-1k^-1, cp_0 CAG parameter 1',
                                            cpb1k 'jmol^-1k^-1,cp_0 CAG parameter 2',
-                                           cpc1k 'jmol^-1k^-1,cp_0 CAG parameter 3'         /
+                                           cpc1k 'jmol^-1k^-1,cp_0 CAG parameter 3'  /
+                                           
     mt 'Molecule type'                  /  a 'acyclic', m 'monocyclic', b 'bicyclic'/
-              
-           ;
+    
+    k binary index /k1*k4/
+
+    c integer cuts /1*2/
+    
+    dyn(c) dynamic set of c
+    ;
 
 Alias (j,g)
          
@@ -69,12 +77,35 @@ CH2S       2       1    3.6763 17.7916 0.0111  0.438  17.117   45.0314     55.14
 Parameter
     T(temp)    Temperatures in K        /e 273, c 316, m 294, s 298/
     P(pr)    Pressures in bar            /atm 1.1, c 14/
-    hfc(i)  Properties of R134a         //
-    R       Gas constant                /8.3145/; 
+    hfc(i)  Properties of R134a         /vp_e 10,
+                                         vp_c 10,
+                                         h_vap 200,
+                                         cp_l 80   /
+    R       Gas constant                /8.3145/
+    
+    Kmax max binary factor
+
+    yv(g,k,c) store y values from previous solutions
+    nv(g,c) store n values
+    zv(c) store z values
+    pv(i,c) store parameter values
+    
+    nL(g)  groups lower bounds
+    nU(g)  groups upper bounds
+
+;
+
+*nL and nU bounds
+nL(g)=0;
+nU(g)=3;
+
+*Kmax
+Kmax=smax(g,ceil(log(nU(g)-nL(g))/log(2)));
     
 Variable
     pi(i)   Property value
     n(g)    Number of selected units of group type g
+    y(g,k)  binary auxiliar variable
     m       'Molecule type 1 = acyclic, 0 = monocyclic, -1 = bicyclic'
     z       Obj function
     
@@ -82,7 +113,7 @@ Variable
     Tcrit   Critical temperature
     Pcrit   Critical pressure
     
-    k       k for vap pressure calculation
+    kvap       k for vap pressure calculation
     h       h for vap pressure calculation
     Gvap    G for vap pressure calculation
     vp_er   Vapour pressure @ reduced Te
@@ -96,10 +127,14 @@ Variable
     cp_ideal Ideal gas heat capacity @ Tm ;
     
 *Positive Variable x(r);
-Binary Variable y(mt);
+Binary Variable w(mt), y;
+Integer variables n(g);
+Positive Variables pi, Tb, Tcrit, Pcrit, vp_er, vp_cr, h_vap298, cp_residual, cp_ideal;
 
 Equation
     OBJ Objective function
+    
+    int_eq  reformulate integer to binary variables
     pressure1 vapour pressure at evaporating temperature is greater than atmospheric
     pressure2 vapour pressure at condensing temperature is less than or equal to 14 bar
     compare1 h_vap to be greater than or equal to that of R134a
@@ -131,8 +166,12 @@ Equation
     idealgascp_eq equation for ideal gas heat capacity at Tm
     newcp_l liquid heat capacity of new refrigerant at Tm
     
+    IntCut integer cut constraint;
     
-OBJ..       z;
+    
+OBJ..       z =E= pi('cp_l')/ pi('h_vap');
+
+int_eq(g)..    n(g) =E= nL(g) + sum(k$(ord(k) le (Kmax+1)), y(g,k)*(2**(ord(k)-1)));
 
 pressure1..   P('atm') - pi('vp_e') =L= 0;
 
@@ -142,11 +181,11 @@ compare1..    hfc('h_vap') - pi('h_vap') =L= 0;
 
 compare2..    pi('cp_l') - hfc('cp_l') =L= 0;   
 
-MT_eq..          sum(mt,y(mt)) =E= 1;
+MT_eq..          sum(mt,w(mt)) =E= 1;
 
-M_eq..           m - (y('a') - y('b')) =E= 0;
+M_eq..           m - (w('a') - w('b')) =E= 0;
 
-ARO..         sum(g,n(g) $ (info(g,'t') = 3)) - 6*y('m') - 10*y('b') =E= 0;
+ARO..         sum(g,n(g) $ (info(g,'t') = 3)) - 6*w('m') - 10*w('b') =E= 0;
 
 octet..       sum(g, (2-info(g,'v'))*n(g)) - 2*m =E= 0;
 
@@ -160,15 +199,15 @@ Tcrit_eq..    Tcrit =e= 181.128*log(sum(g,n(g)*info(g,'tc1k')));
 Pcrit_eq..    Pcrit =e= 1.3705 + (sum(g,n(g)*info(g,'pc1k')) + 0.10022)**(-2);
 
 
-k_eq..           k =e= ((h/Gvap) - (1 + Tb/Tcrit))/((3 + Tb/Tcrit)* (1 - Tb/Tcrit)**2);
+k_eq..           kvap =e= ((h/Gvap) - (1 + Tb/Tcrit))/((3 + Tb/Tcrit)* (1 - Tb/Tcrit)**2);
 
 h_eq..           h =e= (Tb/Tcrit)*((log(Pcrit)/1.01325)/(1 - Tb/Tcrit));
 
 G_eq..           Gvap =e= 0.4835 + 0.4605*h;
 
-ln_newvp_er_eq..  log(vp_er) =e= (-Gvap/(T('e')/Tcrit))*(1 - (T('e')/Tcrit)**2 + k*(3 + (T('e')/Tcrit))*(1 - (T('e')/Tcrit))**3);
+ln_newvp_er_eq..  log(vp_er) =e= (-Gvap/(T('e')/Tcrit))*(1 - (T('e')/Tcrit)**2 + kvap*(3 + (T('e')/Tcrit))*(1 - (T('e')/Tcrit))**3);
 
-ln_newvp_cr_eq..  log(vp_cr) =e= (-Gvap/(T('c')/Tcrit))*(1 - (T('c')/Tcrit)**2 + k*(3 + (T('c')/Tcrit))*(1 - (T('c')/Tcrit))**3);
+ln_newvp_cr_eq..  log(vp_cr) =e= (-Gvap/(T('c')/Tcrit))*(1 - (T('c')/Tcrit)**2 + kvap*(3 + (T('c')/Tcrit))*(1 - (T('c')/Tcrit))**3);
 
 newvp_e..      pi('vp_e') =e= exp(log(vp_er))*Pcrit;
 
@@ -190,12 +229,39 @@ idealgascp_eq..  cp_ideal =e= ((sum(g,n(g)*info(g,'cpa1k')) - 19.7779) + ((sum(g
 
 newcp_l..     pi('cp_l') =e= cp_residual + cp_ideal;
 
+IntCut(c)$(dyn(c)).. sum((g,k),yv(g,k,c)*y(g,k))-sum((g,k),(1-yv(g,k,c))*y(g,k)) =L= sum((g,k),yv(g,k,c)) - 1;
+
+y.fx(g,k)$(ord(k) gt (Kmax+1)) = 0;
+
+n.lo(g)=nL(g);
+n.up(g)=nU(g);
+n.l(g) = 1;
 
 *Ruzicka method newcp_l..     pi('cp_l') =e= R*(sum(g,n(g)*(info(g,'a'))) + sum(g,n(g)*(info(g,'b')))*0.01*T(m) + sum(g,n(g)*info(g,'d'))*(0.01*T(m))**2);
 
-
 Model CAMD / all /;
+options MINLP = BARON;
+*options optcr = 0;
+*options optca = 0;
 
-solve CAMD minimizing z using ;
+dyn(c)=no;
 
-display x.l, y.l;
+*Integer cut
+yv(g,k,c)=0;
+alias(c,cc);
+*define property to minimise (in PO)
+
+*solve CAMD minimising z using MINLP;
+      
+loop(cc,
+         solve CAMD minimising Z using MINLP;
+
+         yv(g,k,cc)=y.l(g,k);
+         nv(g,cc)=n.l(g);
+         zv(cc)=z.l;
+         pv(i,cc)= pi.l(i);
+         dyn(cc)=yes;
+);
+
+display yv,nv,zv,pv;
+
