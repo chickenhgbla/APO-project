@@ -3,10 +3,10 @@ Set
     
     pr 'Process pressure conditions'     / atm 'Atmospheric', c 'Condensing'/
     
-    i 'Types of properties'             / vp_e 'Vapour pressure @ evaporating temperature',
-                                          vp_c 'Vapour pressure @ condensing temperature',
-                                          h_vap 'Heat of vaporisation @ evaporating temperature',
-                                          cp_l 'Liquid heat capacity @ average process temperature' /
+    i 'Types of properties'             / vp_e 'bar, Vapour pressure @ evaporating temperature',
+                                          vp_c 'bar, Vapour pressure @ condensing temperature',
+                                          h_vap 'kj/mol Heat of vaporisation @ evaporating temperature',
+                                          cp_l 'j/mol.k Liquid heat capacity @ average process temperature' /
                                                                                
     g 'group type'                      /  CH3, CH2, CH, C, CH2--CH, CH--CH, CH2--C, CH--C, C--C,
                                            CH2--C--CH, ACH, AC, ACCH3, ACCH2, ACCH, OH, ACOH,
@@ -149,6 +149,7 @@ Equation
     Tb_eq boiling temperature
     Tcrit_eq critical temperature
     Pcrit_eq critical pressure
+    Tcrit_constraint
     
     k_eq vapour pressure eq1
     h_eq vapour pressure eq2
@@ -175,13 +176,17 @@ OBJ..       z =E= pi('cp_l')/ pi('h_vap');
 
 int_eq(g)..    n(g) =E= nL(g) + sum(k$(ord(k) le (Kmax+1)), y(g,k)*(2**(ord(k)-1)));
 
+$ontext
+
 pressure1..   P('atm') - pi('vp_e') =L= 0;
 
 pressure2..   pi('vp_c') - P('c') =L= 0;
 
 compare1..    hfc('h_vap') - pi('h_vap') =L= 0;
 
-compare2..    pi('cp_l') - hfc('cp_l') =L= 0;   
+compare2..    pi('cp_l') - hfc('cp_l') =L= 0;
+
+$offtext
 
 MT_eq..          sum(mt,w(mt)) =E= 1;
 
@@ -199,6 +204,8 @@ Tb_eq..       Tb =e= 204.359*log((sum(g,n(g)*info(g,'tb1k'))));
 Tcrit_eq..    Tcrit =e= 181.128*log(sum(g,n(g)*info(g,'tc1k')));
 
 Pcrit_eq..    Pcrit =e= 1.3705 + (sum(g,n(g)*info(g,'pc1k')) + 0.10022)**(-2);
+
+Tcrit_constraint.. Tcrit =G= T('c');
 
 
 k_eq..           kvap =e= ((h/Gvap) - (1 + Tb/Tcrit))/((3 + Tb/Tcrit)* (1 - Tb/Tcrit)**2);
@@ -225,7 +232,7 @@ theta_eq..    theta =e= (T('m') - 298)/700;
 
 omega_eq..    omega =e= 0.4085*(log((sum(g,n(g)*info(g, 'w1k'))) + 1.1507)**(1/0.5050));
 
-residualcp_eq..  cp_residual =e= R*(1.586 + 0.49/(1 - ((T('m'))/Tcrit)) + omega*(4.2775 + 6.3*power((1 - ((T('m'))/Tcrit)),(-3))/((T('m'))/Tcrit) + 0.4355/(1 - ((T('m'))/Tcrit))));
+residualcp_eq..  cp_residual =e= R*(1.586 + 0.49/(1 - ((T('m'))/Tcrit)) + omega*(4.2775 + (6.3*power((1 - ((T('m'))/Tcrit)),(-3)))/((T('m'))/Tcrit) + 0.4355/(1 - ((T('m'))/Tcrit))));
 
 idealgascp_eq..  cp_ideal =e= ((sum(g,n(g)*info(g,'cpa1k')) - 19.7779) + ((sum(g,n(g)*info(g,'cpb1k'))) + 22.5981)*theta + ((sum(g,n(g)*info(g,'cpc1k'))) - 10.7983)*power(theta,2));
 
@@ -237,7 +244,6 @@ eqAux1.. sum(g,n(g)) =G= 1;
 
 n.lo(g)=nL(g);
 n.up(g)=nU(g);
-n.l(g)=0;
 n.l('CH3')=2;
 n.l('CH2')=2;
 y.l(g,k) = 0;
@@ -307,8 +313,9 @@ yv(g,k,c)=0;
 alias(c,cc);
 *define property to minimise (in PO)
 
-*solve CAMD minimising z using MINLP;
-      
+solve CAMD minimising z using MINLP;
+     
+$ontext 
 loop(cc,
          solve CAMD minimising z using MINLP;
 
@@ -320,4 +327,4 @@ loop(cc,
 );
 
 display yv,nv,zv,pv;
-
+$offtext
