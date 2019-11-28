@@ -79,8 +79,8 @@ Parameter
     P(pr)    Pressures in bar            /atm 1.1, c 14/
     hfc(i)  Properties of R134a         /vp_e 10,
                                          vp_c 10,
-                                         h_vap 200,
-                                         cp_l 80   /
+                                         h_vap 20.353,
+                                         cp_l 143.4/
     R       Gas constant                /8.3145/
     
     Kmax max binary factor
@@ -106,6 +106,7 @@ Variable
     pi(i)   Property value
     n(g)    Number of selected units of group type g
     y(g,k)  binary auxiliar variable
+    w(mt)
     m       'Molecule type 1 = acyclic, 0 = monocyclic, -1 = bicyclic'
     z       Obj function
     
@@ -166,7 +167,8 @@ Equation
     idealgascp_eq equation for ideal gas heat capacity at Tm
     newcp_l liquid heat capacity of new refrigerant at Tm
     
-    IntCut integer cut constraint;
+    IntCut integer cut constraint
+    eqAux1 at least 2 groups chosen;
     
     
 OBJ..       z =E= pi('cp_l')/ pi('h_vap');
@@ -205,13 +207,13 @@ h_eq..           h =e= (Tb/Tcrit)*((log(Pcrit)/1.01325)/(1 - Tb/Tcrit));
 
 G_eq..           Gvap =e= 0.4835 + 0.4605*h;
 
-ln_newvp_er_eq..  log(vp_er) =e= (-Gvap/(T('e')/Tcrit))*(1 - (T('e')/Tcrit)**2 + kvap*(3 + (T('e')/Tcrit))*(1 - (T('e')/Tcrit))**3);
+ln_newvp_er_eq..  vp_er =e= (-Gvap/(T('e')/Tcrit))*(1 - (T('e')/Tcrit)**2 + kvap*(3 + (T('e')/Tcrit))*power((1 - (T('e')/Tcrit)),3));
 
-ln_newvp_cr_eq..  log(vp_cr) =e= (-Gvap/(T('c')/Tcrit))*(1 - (T('c')/Tcrit)**2 + kvap*(3 + (T('c')/Tcrit))*(1 - (T('c')/Tcrit))**3);
+ln_newvp_cr_eq..  vp_cr =e= (-Gvap/(T('c')/Tcrit))*(1 - (T('c')/Tcrit)**2 + kvap*(3 + (T('c')/Tcrit))*power((1 - (T('c')/Tcrit)),3));
 
-newvp_e..      pi('vp_e') =e= exp(log(vp_er))*Pcrit;
+newvp_e..      pi('vp_e') =e= exp(vp_er)*Pcrit;
 
-newvp_c..      pi('vp_c') =e= exp(log(vp_cr))*Pcrit;
+newvp_c..      pi('vp_c') =e= exp(vp_cr)*Pcrit;
 
 
 newh_vap298_eq.. h_vap298 =e= 6.829 + sum(g,n(g)*(info(g,'hv1k')));
@@ -223,19 +225,73 @@ theta_eq..    theta =e= (T('m') - 298)/700;
 
 omega_eq..    omega =e= 0.4085*(log((sum(g,n(g)*info(g, 'w1k'))) + 1.1507)**(1/0.5050));
 
-residualcp_eq..  cp_residual =e= R*(1.586 + 0.49/(1 - ((T('m'))/Tcrit)) + omega*(4.2775 + 6.3*(1 - ((T('m'))/Tcrit))**(1/3)/((T('m'))/Tcrit) + 0.4355/(1 - ((T('m'))/Tcrit))));
+residualcp_eq..  cp_residual =e= R*(1.586 + 0.49/(1 - ((T('m'))/Tcrit)) + omega*(4.2775 + 6.3*power((1 - ((T('m'))/Tcrit)),(-3))/((T('m'))/Tcrit) + 0.4355/(1 - ((T('m'))/Tcrit))));
 
-idealgascp_eq..  cp_ideal =e= ((sum(g,n(g)*info(g,'cpa1k')) - 19.7779) + ((sum(g,n(g)*info(g,'cpb1k'))) + 22.5981)*theta + ((sum(g,n(g)*info(g,'cpc1k'))) - 10.7983)*(theta)**2);
+idealgascp_eq..  cp_ideal =e= ((sum(g,n(g)*info(g,'cpa1k')) - 19.7779) + ((sum(g,n(g)*info(g,'cpb1k'))) + 22.5981)*theta + ((sum(g,n(g)*info(g,'cpc1k'))) - 10.7983)*power(theta,2));
 
 newcp_l..     pi('cp_l') =e= cp_residual + cp_ideal;
 
 IntCut(c)$(dyn(c)).. sum((g,k),yv(g,k,c)*y(g,k))-sum((g,k),(1-yv(g,k,c))*y(g,k)) =L= sum((g,k),yv(g,k,c)) - 1;
 
-y.fx(g,k)$(ord(k) gt (Kmax+1)) = 0;
+eqAux1.. sum(g,n(g)) =G= 1;
 
 n.lo(g)=nL(g);
 n.up(g)=nU(g);
-n.l(g) = 1;
+n.l(g)=0;
+n.l('CH3')=2;
+n.l('CH2')=2;
+y.l(g,k) = 0;
+y.l('CH3','k2')=1;
+y.l('CH2','k2')=1;
+pi.l('vp_e') = 3;
+pi.l('vp_c') = 10;
+pi.l('h_vap') = 40;
+pi.l('cp_l') = 100;
+Tb.l = 200;      
+Tcrit.l = 400;   
+Pcrit.l = 15;   
+
+kvap.l = 1;       
+h.l = 1;     
+Gvap.l = 1;    
+vp_er.l = 5;   
+vp_cr.l = 5;   
+
+h_vap298.l = 30; 
+
+theta.l = 1; 
+omega.l = 1;  
+cp_residual.l = 50; 
+cp_ideal.l = 50; 
+
+$ontext
+
+pi(i)   Property value
+n(g)    Number of selected units of group type g
+y(g,k)  binary auxiliar variable
+w(mt)
+m       'Molecule type 1 = acyclic, 0 = monocyclic, -1 = bicyclic'
+z       Obj function
+
+Tb      Boiling temperature
+Tcrit   Critical temperature
+Pcrit   Critical pressure
+
+kvap       k for vap pressure calculation
+h       h for vap pressure calculation
+Gvap    G for vap pressure calculation
+vp_er   Vapour pressure @ reduced Te
+vp_cr   Vapour pressure @ reduced Tc
+
+h_vap298 Vapour pressure @ 298K 
+
+theta   Theta to be used in CaG cp calculation @ Tm
+omega   Accentric factor to be used in cp calculation
+cp_residual Residual heat capacity @ Tm
+cp_ideal Ideal gas heat capacity @ Tm ;
+
+$offtext
+
 
 *Ruzicka method newcp_l..     pi('cp_l') =e= R*(sum(g,n(g)*(info(g,'a'))) + sum(g,n(g)*(info(g,'b')))*0.01*T(m) + sum(g,n(g)*info(g,'d'))*(0.01*T(m))**2);
 
@@ -254,7 +310,7 @@ alias(c,cc);
 *solve CAMD minimising z using MINLP;
       
 loop(cc,
-         solve CAMD minimising Z using MINLP;
+         solve CAMD minimising z using MINLP;
 
          yv(g,k,cc)=y.l(g,k);
          nv(g,cc)=n.l(g);
