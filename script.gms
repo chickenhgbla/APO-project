@@ -136,10 +136,12 @@ Equation
     OBJ Objective function
     
     int_eq  reformulate integer to binary variables
+$ontext
     pressure1 vapour pressure at evaporating temperature is greater than atmospheric
     pressure2 vapour pressure at condensing temperature is less than or equal to 14 bar
     compare1 h_vap to be greater than or equal to that of R134a
     compare2 cp_l to be less than or equal to that of R134a
+$offtext
     MT_eq  Only can be 1 molecule type 
     M_eq   Relate m to binary molecule types
     ARO Relate indicator variable m to number of aromatic groups
