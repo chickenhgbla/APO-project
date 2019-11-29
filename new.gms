@@ -118,6 +118,7 @@ Equation
     
     pressure1 vapour pressure at evaporating temperature is greater than atmospheric
     pressure2 vapour pressure at condensing temperature is less than or equal to 14 bar
+    compare1 h_vap to be greater than or equal to that of R134a    
     compare2 cp_l to be less than or equal to that of R134a    
     
     octet   Octet rule - so that there is no free bonds
@@ -162,6 +163,8 @@ pressure1..   P('atm') - pi('vp_e') =L= 0;
 
 pressure2..   pi('vp_c') - P('c') =L= 0;
 
+compare1..    hfc('h_vap') - pi('h_vap') =L= 0;
+
 compare2..    pi('cp_l') - hfc('cp_l') =L= 0;
 
 
@@ -203,7 +206,7 @@ theta_eq..    theta =e= (T('m') - 298)/700;
 
 omega_eq..    omega =e= 0.4085*(log((sum(g,n(g)*info(g, 'w1k'))) + 1.1507)**(1/0.5050));
 
-residualcp_eq..  cp_residual =e= R*(1.586 + 0.49/(1 - ((T('m'))/Tcrit)) + omega*(4.2775 + (6.3*power((1 - ((T('m'))/Tcrit)),(-3)))/((T('m'))/Tcrit) + 0.4355/(1 - ((T('m'))/Tcrit))));
+residualcp_eq..  cp_residual =e= R*(1.586 + 0.49/(1 - ((T('m'))/Tcrit)) + omega*(4.2775 + (6.3*1 - (T('m')/Tcrit))**(1/3))/((T('m'))/Tcrit) + 0.4355/(1 - ((T('m'))/Tcrit))));
 
 idealgascp_eq..  cp_ideal =e= ((sum(g,n(g)*info(g,'cpa1k')) - 19.7779) + ((sum(g,n(g)*info(g,'cpb1k'))) + 22.5981)*theta + ((sum(g,n(g)*info(g,'cpc1k'))) - 10.7983)*power(theta,2));
 
