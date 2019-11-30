@@ -1,0 +1,171 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+SHELL=/bin/csh
+Hostname=psl198
+Scratch dir=/work/wtt116/gams/thirtynovmodelBARON2.2664215.wk
+Parameters=
+Gams command= gams28.2.0  thirtynovmodelBARON2 procDirPath=/work/wtt116/gams/thirtynovmodelBARON2.2664215.wk O=thirtynovmodelBARON2.2664215.lst lo=3 SolveLink=5 
+Allocated cpu cores= 1
+Requested Gams threads= NotSet
+Allocated Gams threads= 1
+--- Job thirtynovmodelBARON2 Start 11/30/19 13:49:51 28.2.0 r750fa45 LEX-LEG x86 64bit/Linux
+--- GAMS Parameters defined
+    Input /home/ps/ce-fs2/wtt116/thirtynovmodelBARON2.gms
+    Output /home/ps/ce-fs2/wtt116/thirtynovmodelBARON2.2664215.lst
+    ScrDir /work/wtt116/gams/thirtynovmodelBARON2.2664215.wk/225a/
+    SysDir /rvol/GAMS/gams28.2.0_linux_x64_64_sfx/
+    LogOption 3
+    SolveLink 5
+    Threads 1
+    ProcDirPath /work/wtt116/gams/thirtynovmodelBARON2.2664215.wk
+GAMS 28.2.0   Copyright (C) 1987-2019 GAMS Development. All rights reserved
+Licensee: Medium MUD - 10 User License                   S190611/0001AP-LNX
+          Imperial College London, Centre for Process Systems EngineerDC621
+          License for teaching and research at degree granting institutions
+          License Admin: Graham Stuart, g.stuart@imperial.ac.uk            
+--- Starting compilation
+--- thirtynovmodelBARON2.gms(292) 3 Mb
+--- Starting execution: elapsed 0:00:00.016
+--- thirtynovmodelBARON2.gms(274) 4 Mb
+--- Generating MINLP model CAMD
+--- thirtynovmodelBARON2.gms(275) 6 Mb
+--- Reset Solvelink = 2
+--- LOOPS cc = 1
+---   82 rows  130 columns  1,182 non-zeroes
+---   597 nl-code  164 nl-non-zeroes
+---   112 discrete-columns
+--- thirtynovmodelBARON2.gms(275) 4 Mb
+--- Executing BARON (Solvelink=2): elapsed 0:00:00.026
+
+GAMS/BARON       28.2.0 r750fa45 Released Aug 19, 2019 LEG x86 64bit/Linux    
+
+===========================================================================
+ BARON version 19.7.13. Built: LNX-64 Sat Jul 13 11:51:07 EDT 2019
+
+ BARON is a product of The Optimization Firm.
+ For information on BARON, see https://minlp.com/about-baron
+
+ If you use this software, please cite publications from
+ https://minlp.com/baron-publications, such as: 
+
+ Kilinc, M. and N. V. Sahinidis, Exploiting integrality in the global
+ optimization of mixed-integer nonlinear programming problems in BARON,
+ Optimization Methods and Software, 33, 540-562, 2018.
+===========================================================================
+ This BARON run may utilize the following subsolver(s)
+ For LP/MIP/QP: ILOG CPLEX                                      
+ For NLP: MINOS, SNOPT, GAMS external NLP, IPOPT, FILTERSD, FILTERSQP
+===========================================================================
+ Doing local search
+ Solving bounding LP
+ Starting multi-start local search
+ Done with local search
+===========================================================================
+  Iteration    Open nodes         Time (s)    Lower bound      Upper bound
+          1             1             0.15     0.293897E-01    0.100000E+52
+*       817            22            10.48     0.843456         5.44170    
+*       821            22            10.51     0.843456         5.42847    
+*      1366            21            12.94     1.42700          4.67419    
+*      1417            19            13.37     1.42987          3.40139    
+       1983             0            16.50     3.09217          3.40139    
+
+ Cleaning up
+
+                         *** Normal completion ***            
+
+ Wall clock time:                    16.70
+ Total CPU time used:                16.50
+
+ Total no. of BaR iterations:    1983
+ Best solution found at node:    1417
+ Max. no. of nodes in memory:      32
+ 
+ All done
+===========================================================================
+
+Solution      = 3.40139130824118  found at node 1417
+Best possible = 3.09217391658
+Absolute gap  = 0.30921739166118  optca = 1E-9
+Relative gap  = 0.0909090909099409  optcr = 0.1
+  (Note that BARON uses a different formula to compute the relative gap as
+   was used for the above reported value.)
+
+--- Reading solution for model CAMD
+***
+*** Solver did not provide marginals for model CAMD
+***
+--- thirtynovmodelBARON2.gms(274) 4 Mb
+--- Generating MINLP model CAMD
+--- thirtynovmodelBARON2.gms(275) 6 Mb
+--- Reset Solvelink = 2
+--- LOOPS cc = 2
+---   83 rows  158 columns  1,294 non-zeroes
+---   597 nl-code  164 nl-non-zeroes
+---   140 discrete-columns
+--- thirtynovmodelBARON2.gms(275) 4 Mb
+--- Executing BARON (Solvelink=2): elapsed 0:00:16.796
+
+GAMS/BARON       28.2.0 r750fa45 Released Aug 19, 2019 LEG x86 64bit/Linux    
+
+===========================================================================
+ BARON version 19.7.13. Built: LNX-64 Sat Jul 13 11:51:07 EDT 2019
+
+ BARON is a product of The Optimization Firm.
+ For information on BARON, see https://minlp.com/about-baron
+
+ If you use this software, please cite publications from
+ https://minlp.com/baron-publications, such as: 
+
+ Kilinc, M. and N. V. Sahinidis, Exploiting integrality in the global
+ optimization of mixed-integer nonlinear programming problems in BARON,
+ Optimization Methods and Software, 33, 540-562, 2018.
+===========================================================================
+ This BARON run may utilize the following subsolver(s)
+ For LP/MIP/QP: ILOG CPLEX                                      
+ For NLP: MINOS, SNOPT, GAMS external NLP, IPOPT, FILTERSD, FILTERSQP
+===========================================================================
+ Doing local search
+ Solving bounding LP
+ Starting multi-start local search
+ Done with local search
+===========================================================================
+  Iteration    Open nodes         Time (s)    Lower bound      Upper bound
+          1             1             0.14     0.293897E-01    0.100000E+52
+*       616            18            17.71     0.320548         5.86731    
+*       836            21            19.67     0.320548         5.42847    
+*      2149            13            27.55     1.96566          4.67419    
+*      2282             5            28.08     1.96566          3.40139    
+       2287             0            28.10     3.09217          3.40139    
+
+ Cleaning up
+
+                         *** Normal completion ***            
+
+ Wall clock time:                    28.21
+ Total CPU time used:                28.10
+
+ Total no. of BaR iterations:    2287
+ Best solution found at node:    2282
+ Max. no. of nodes in memory:      38
+ 
+ All done
+===========================================================================
+
+Solution      = 3.40139130824118  found at node 2282
+Best possible = 3.09217391658
+Absolute gap  = 0.30921739166118  optca = 1E-9
+Relative gap  = 0.0909090909099409  optcr = 0.1
+  (Note that BARON uses a different formula to compute the relative gap as
+   was used for the above reported value.)
+
+--- Reading solution for model CAMD
+***
+*** Solver did not provide marginals for model CAMD
+***
+--- thirtynovmodelBARON2.gms(274) 4 Mb--- thirtynovmodelBARON2.gms(284) 4 Mb
+*** Status: Normal completion
+--- Job thirtynovmodelBARON2.gms Stop 11/30/19 13:50:36 elapsed 0:00:45.083
+
+Execution Time : psl198 : User 41.65  System 3.06  Elapsed 0:45.11
+
+done
