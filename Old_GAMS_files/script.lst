@@ -1,0 +1,889 @@
+GAMS 28.2.0  r750fa45 Released Aug 19, 2019 WEX-WEI x86 64bit/MS Windows - 11/29/19 10:12:18 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1  Set
+   2      temp 'Process temperature conditions'  / e 'Evaporating temperature', c 'Condensing temperature', m 'Average process temperature', s 'Standard temperature 298'/
+   3   
+   4      pr 'Process pressure conditions'     / atm 'Atmospheric', c 'Condensing'/
+   5   
+   6      i 'Types of properties'             / vp_e 'bar, Vapour pressure @ evaporating temperature',
+   7                                            vp_c 'bar, Vapour pressure @ condensing temperature',
+   8                                            h_vap 'kj/mol Heat of vaporisation @ evaporating temperature',
+   9                                            cp_l 'j/mol.k Liquid heat capacity @ average process temperature' /
+  10   
+  11      g 'group type'                      /  CH3, CH2, CH, C, CH2--CH, CH--CH, CH2--C, CH--C, C--C,
+  12                                             CH2--C--CH, ACH, AC, ACCH3, ACCH2, ACCH, OH, ACOH,
+  13                                             CH3CO, CHO, CH3COO, CH3O, CH2O, CH-O, CHNH2, CH3NH,
+  14                                             CH2NH, CH3N, CH2N, CH2CN, COOH, I, Br, CH---C, CH2S /
+  15   
+  16      par 'paramter'                      /  v 'Valency',
+  17                                             t 'Type; 1 = General, 2 = Unsaturated, 3 = Aromatic',
+  18                                             tb1k 'k, CAG parameter for normal boiling temperature',
+  19                                             tc1k 'k, CAG parameter for critical temperature',
+  20                                             pc1k 'bar^0.5, CAG parameter for critical pressure',
+  21                                             w1k 'CAG parameter for acentric factor',
+  22                                             hv1k 'kjmol^-1, CAG parameter for h_vap298',
+  23                                             cpa1k 'jmol^-1k^-1, cp_0 CAG parameter 1',
+  24                                             cpb1k 'jmol^-1k^-1,cp_0 CAG parameter 2',
+  25                                             cpc1k 'jmol^-1k^-1,cp_0 CAG parameter 3'  /
+  26   
+  27      mt 'Molecule type'                  /  a 'acyclic', m 'monocyclic', b 'bicyclic'/
+  28   
+  29      k binary index /k1*k4/
+  30   
+  31      c integer cuts /1*2/
+  32   
+  33      dyn(c) dynamic set of c
+  34      ;
+  35   
+  36  Alias (j,g)
+  37   
+  38  Table
+  39              info(g,par) 'Information about each group type'
+  40   
+  41             v       t    tb1k   tc1k    pc1k    w1k    hv1k     cpa1k       cpb1k       cpc1k
+  42  CH3        1       1    0.8894 1.6781  0.0199  0.296  4.116    35.1152     39.5923     -9.9232
+  43  CH2        2       1    0.9225 3.492   0.0106  0.147  4.65     22.6346     45.0933     -15.7033
+  44  CH         3       1    0.6033 4.033   0.0013  -0.071 2.771    8.9272      59.9786     -29.5143
+  45  C          4       1    0.2878 4.8823  -0.0104 -0.351 1.284    0.3456      74.0368     -45.7878
+  46  CH2--CH    1       2    1.7827 5.0146  0.025   0.408  6.714    49.2506     59.384      -21.7908
+  47  CH--CH     2       2    1.8433 7.3691  0.0179  0.252  7.37     35.2248     62.1924     -24.8156
+  48  CH2--C     2       2    1.7117 6.5081  0.0223  0.223  6.797    37.6299     62.1285     -26.0637
+  49  CH--C      3       2    1.7957 8.9582  0.0126  0.235  8.178    21.3528     66.3947     -29.3703
+  50  C--C       4       2    1.8881 11.3764 0.002   -0.21  9.342    10.2797     65.5372     -30.6057
+  51  CH2--C--CH 1       2    3.1243 9.9318  0.0313  0.152  12.318   66.0574     69.3936     -25.1081
+  52  ACH        2       3    0.9297 3.7337  0.0075  0.027  4.098    16.3794     32.7433     -13.1692
+  53  AC         3       3    1.6254 14.6409 0.0021  0.334  12.552   10.4283     25.3634     -12.7283
+  54  ACCH3      2       3    1.9669 8.213   0.0194  0.146  9.776    42.8569     65.6464     -21.067
+  55  ACCH2      3       3    1.9478 10.3239 0.0122  -0.088 10.185   32.8206     70.4153     -28.9361
+  56  ACCH       4       3    1.7444 10.4664 0.0028  1.524  8.834    19.9504     81.8764     -40.2864
+  57  OH         1       1    3.2152 9.7292  0.0051  0.737  24.529   27.2107     2.7609      1.306
+  58  ACOH       2       3    4.4014 25.9145 -0.0074 1.015  40.246   39.7712     35.5676     -15.5875
+  59  CH3CO      1       1    3.5668 13.2896 0.0251  0.633  18.999   59.3032     67.8149     -20.9948
+  60  CHO        1       1    2.8526 10.1986 0.0141  1.133  12.909   40.7501     19.699      -5.436
+  61  CH3COO     1       1    3.636  12.5965 0.029   0.756  22.709   66.8423     102.4553    -43.3306
+  62  CH3O       1       1    2.2536 6.4737  0.0204  0.442  10.919   50.5604     38.9681     -4.7799
+  63  CH2O       2       1    1.6249 6.0723  0.0151  0.218  7.478    39.5784     41.8177     -11.0837
+  64  CH-O       3       1    1.1557 5.0663  0.0099  0.509  5.708    25.675      24.7281     4.2419
+  65  CHNH2      2       1    2.5983 10.2075 0.0107  0.953  11.876   44.1122     77.2155     -33.5086
+  66  CH3NH      2       1    3.1376 9.8544  0.0126  0.55   14.452   53.7012     71.7948     -22.9685
+  67  CH2NH      3       1    2.6127 10.4677 0.0104  0.386  14.481   44.6388     68.5041     -26.7106
+  68  CH3N       2       1    2.1647 7.6924  0.0159  0.075  6.947    41.4064     85.0996     -35.6318
+  69  CH2N       3       1    1.2171 5.5172  0.0049  0.793  6.918    30.1561     81.6814     -36.1441
+  70  CH2CN      1       1    5.0525 20.3781 0.0361  1.67   23.34    58.2837     49.6388     -15.6291
+  71  COOH       1       1    5.8337 23.7593 0.0115  0.57   43.046   46.5577     48.2322     -20.4868
+  72  I          1       1    3.665  17.3947 0.0028  0.233  14.364   29.1815     -9.7846     3.4554
+  73  Br         1       1    2.6495 10.5371 -0.0018 0.278  11.423   28.026      -7.1651     2.4332
+  74  CH---C     1       2    2.3678 7.5433  0.0148  0.618  7.751    45.9768     20.6417     -8.3297
+  75  CH2S       2       1    3.6763 17.7916 0.0111  0.438  17.117   45.0314     55.1432     -18.7776                       ;
+  76   
+  77  Parameter
+  78      T(temp)    Temperatures in K        /e 273, c 316, m 294, s 298/
+  79      P(pr)    Pressures in bar            /atm 1.1, c 14/
+  80      hfc(i)  Properties of R134a         /vp_e 10,
+  81                                           vp_c 10,
+  82                                           h_vap 20.353,
+  83                                           cp_l 143.4/
+  84      R       Gas constant                /8.3145/
+  85   
+  86      Kmax max binary factor
+  87   
+  88      yv(g,k,c) store y values from previous solutions
+  89      nv(g,c) store n values
+  90      zv(c) store z values
+  91      pv(i,c) store parameter values
+  92   
+  93      nL(g)  groups lower bounds
+  94      nU(g)  groups upper bounds
+  95   
+  96  ;
+  97   
+  98  *nL and nU bounds
+  99  nL(g)=0;
+ 100  nU(g)=3;
+ 101   
+ 102  *Kmax
+ 103  Kmax=smax(g,ceil(log(nU(g)-nL(g))/log(2)));
+ 104   
+ 105  Variable
+ 106      pi(i)   Property value
+ 107      n(g)    Number of selected units of group type g
+ 108      y(g,k)  binary auxiliar variable
+ 109      w(mt)
+ 110      m       'Molecule type 1 = acyclic, 0 = monocyclic, -1 = bicyclic'
+ 111      z       Obj function
+ 112   
+ 113      Tb      Boiling temperature
+ 114      Tcrit   Critical temperature
+ 115      Pcrit   Critical pressure
+ 116   
+ 117      kvap       k for vap pressure calculation
+ 118      h       h for vap pressure calculation
+ 119      Gvap    G for vap pressure calculation
+ 120      vp_er   Vapour pressure @ reduced Te
+ 121      vp_cr   Vapour pressure @ reduced Tc
+ 122   
+ 123      h_vap298 Vapour pressure @ 298K
+ 124   
+ 125      theta   Theta to be used in CaG cp calculation @ Tm
+ 126      omega   Accentric factor to be used in cp calculation
+ 127      cp_residual Residual heat capacity @ Tm
+ 128      cp_ideal Ideal gas heat capacity @ Tm ;
+ 129   
+ 130  *Positive Variable x(r);
+ 131  Binary Variable w(mt), y;
+ 132  Integer variables n(g);
+ 133  Positive Variables pi, Tb, Tcrit, Pcrit, vp_er, vp_cr, h_vap298, cp_residual, cp_ideal;
+ 134   
+ 135  Equation
+ 136      OBJ Objective function
+ 137   
+ 138      int_eq  reformulate integer to binary variables
+          pressure1 vapour pressure at evaporating temperature is greater than atmospheric
+          pressure2 vapour pressure at condensing temperature is less than or equal to 14 bar
+          compare1 h_vap to be greater than or equal to that of R134a
+          compare2 cp_l to be less than or equal to that of R134a
+ 145      MT_eq  Only can be 1 molecule type
+ 146      M_eq   Relate m to binary molecule types
+ 147      ARO Relate indicator variable m to number of aromatic groups
+ 148      octet   Octet rule - so that there is no free bonds
+ 149      unphysical(j)  To prevent unphysical combinations
+ 150   
+ 151      Tb_eq boiling temperature
+ 152      Tcrit_eq critical temperature
+ 153      Pcrit_eq critical pressure
+ 154      Tcrit_constraint
+ 155   
+ 156      k_eq vapour pressure eq1
+ 157      h_eq vapour pressure eq2
+ 158      G_eq vapour pressure eq3
+ 159      ln_newvp_er_eq vapour presure of new refrigerant at Te over Tcrit
+ 160      ln_newvp_cr_eq vapour pressure of new refrigerant at Tc over Tcrit
+ 161      newvp_e vapour pressure of new refrigerant at Te
+ 162      newvp_c vapour pressure of new refrigerant at Tc
+ 163   
+ 164      newh_vap298_eq equation for heat of vaporisation of new refrigerant at 298K
+ 165      newh_vap heat of vaporisation of new refrigerant at Te using Watson eqn
+ 166   
+ 167      theta_eq theta to be used in CaG cp equation
+ 168      omega_eq equation for omega accentric factor
+ 169      residualcp_eq equation for residual heat capacity of new refrigerant at Tm
+ 170      idealgascp_eq equation for ideal gas heat capacity at Tm
+ 171      newcp_l liquid heat capacity of new refrigerant at Tm
+ 172   
+ 173      IntCut integer cut constraint
+ 174      eqAux1 at least 2 groups chosen;
+ 175   
+ 176   
+ 177  OBJ..       z =E= pi('cp_l')/ pi('h_vap');
+ 178   
+ 179  int_eq(g)..    n(g) =E= nL(g) + sum(k$(ord(k) le (Kmax+1)), y(g,k)*(2**(ord(k)-1)));
+ 180   
+       
+      pressure1..   P('atm') - pi('vp_e') =L= 0;
+       
+      pressure2..   pi('vp_c') - P('c') =L= 0;
+       
+      compare1..    hfc('h_vap') - pi('h_vap') =L= 0;
+       
+      compare2..    pi('cp_l') - hfc('cp_l') =L= 0;
+       
+ 192   
+ 193  MT_eq..          sum(mt,w(mt)) =E= 1;
+ 194   
+ 195  M_eq..           m - (w('a') - w('b')) =E= 0;
+ 196   
+ 197  ARO..         sum(g,n(g) $ (info(g,'t') = 3)) - 6*w('m') - 10*w('b') =E= 0;
+ 198   
+ 199  octet..       sum(g, (2-info(g,'v'))*n(g)) - 2*m =E= 0;
+ 200   
+ 201  unphysical(j)..  n(j)*(info(j,'v') - 1) + 2 - sum(g,n(g)) =L= 0;
+ 202   
+ 203   
+ 204  Tb_eq..       Tb =e= 204.359*log((sum(g,n(g)*info(g,'tb1k'))));
+ 205   
+ 206  Tcrit_eq..    Tcrit =e= 181.128*log(sum(g,n(g)*info(g,'tc1k')));
+ 207   
+ 208  Pcrit_eq..    Pcrit =e= 1.3705 + (sum(g,n(g)*info(g,'pc1k')) + 0.10022)**(-2);
+ 209   
+ 210  Tcrit_constraint.. Tcrit =G= T('c');
+ 211   
+ 212   
+ 213  k_eq..           kvap =e= ((h/Gvap) - (1 + Tb/Tcrit))/((3 + Tb/Tcrit)* (1 - Tb/Tcrit)**2);
+ 214   
+ 215  h_eq..           h =e= (Tb/Tcrit)*((log(Pcrit)/1.01325)/(1 - Tb/Tcrit));
+ 216   
+ 217  G_eq..           Gvap =e= 0.4835 + 0.4605*h;
+ 218   
+ 219  ln_newvp_er_eq..  vp_er =e= (-Gvap/(T('e')/Tcrit))*(1 - (T('e')/Tcrit)**2 + kvap*(3 + (T('e')/Tcrit))*power((1 - (T('e')/Tcrit)),3));
+ 220   
+ 221  ln_newvp_cr_eq..  vp_cr =e= (-Gvap/(T('c')/Tcrit))*(1 - (T('c')/Tcrit)**2 + kvap*(3 + (T('c')/Tcrit))*power((1 - (T('c')/Tcrit)),3));
+ 222   
+ 223  newvp_e..      pi('vp_e') =e= exp(vp_er)*Pcrit;
+ 224   
+ 225  newvp_c..      pi('vp_c') =e= exp(vp_cr)*Pcrit;
+ 226   
+ 227   
+ 228  newh_vap298_eq.. h_vap298 =e= 6.829 + sum(g,n(g)*(info(g,'hv1k')));
+ 229   
+ 230  newh_vap..    pi('h_vap') =e= h_vap298*((1-(T('e')/Tcrit))/(1-(T('s')/Tcrit)))**0.375;
+ 231   
+ 232   
+ 233  theta_eq..    theta =e= (T('m') - 298)/700;
+ 234   
+ 235  omega_eq..    omega =e= 0.4085*(log((sum(g,n(g)*info(g, 'w1k'))) + 1.1507)**(1/0.5050));
+ 236   
+ 237  residualcp_eq..  cp_residual =e= R*(1.586 + 0.49/(1 - ((T('m'))/Tcrit)) + omega*(4.2775 + (6.3*power((1 - ((T('m'))/Tcrit)),(-3)))/((T('m'))/Tcrit) + 0.4355/(1 - ((T('m'))/Tcrit))));
+ 238   
+ 239  idealgascp_eq..  cp_ideal =e= ((sum(g,n(g)*info(g,'cpa1k')) - 19.7779) + ((sum(g,n(g)*info(g,'cpb1k'))) + 22.5981)*theta + ((sum(g,n(g)*info(g,'cpc1k'))) - 10.7983)*power(theta,2));
+ 240   
+ 241  newcp_l..     pi('cp_l') =e= cp_residual + cp_ideal;
+ 242   
+ 243  IntCut(c)$(dyn(c)).. sum((g,k),yv(g,k,c)*y(g,k))-sum((g,k),(1-yv(g,k,c))*y(g,k)) =L= sum((g,k),yv(g,k,c)) - 1;
+ 244   
+ 245  eqAux1.. sum(g,n(g)) =G= 1;
+ 246   
+ 247  n.lo(g)=nL(g);
+ 248  n.up(g)=nU(g);
+ 249  n.l('CH3')=2;
+ 250  n.l('CH2')=2;
+ 251  y.l(g,k) = 0;
+ 252  y.l('CH3','k2')=1;
+ 253  y.l('CH2','k2')=1;
+ 254  pi.l('vp_e') = 3;
+ 255  pi.l('vp_c') = 10;
+ 256  pi.l('h_vap') = 40;
+ 257  pi.l('cp_l') = 100;
+ 258  Tb.l = 200;
+ 259  Tcrit.l = 400;
+ 260  Pcrit.l = 15;
+ 261   
+ 262  kvap.l = 1;
+ 263  h.l = 1;
+ 264  Gvap.l = 1;
+ 265  vp_er.l = 5;
+ 266  vp_cr.l = 5;
+ 267   
+ 268  h_vap298.l = 30;
+ 269   
+ 270  theta.l = 1;
+ 271  omega.l = 1;
+ 272  cp_residual.l = 50;
+ 273  cp_ideal.l = 50;
+ 274   
+       
+      pi(i)   Property value
+      n(g)    Number of selected units of group type g
+      y(g,k)  binary auxiliar variable
+      w(mt)
+      m       'Molecule type 1 = acyclic, 0 = monocyclic, -1 = bicyclic'
+      z       Obj function
+       
+      Tb      Boiling temperature
+      Tcrit   Critical temperature
+      Pcrit   Critical pressure
+       
+      kvap       k for vap pressure calculation
+      h       h for vap pressure calculation
+      Gvap    G for vap pressure calculation
+      vp_er   Vapour pressure @ reduced Te
+      vp_cr   Vapour pressure @ reduced Tc
+       
+      h_vap298 Vapour pressure @ 298K 
+       
+      theta   Theta to be used in CaG cp calculation @ Tm
+      omega   Accentric factor to be used in cp calculation
+      cp_residual Residual heat capacity @ Tm
+      cp_ideal Ideal gas heat capacity @ Tm ;
+       
+ 302   
+ 303   
+ 304  *Ruzicka method newcp_l..     pi('cp_l') =e= R*(sum(g,n(g)*(info(g,'a'))) + sum(g,n(g)*(info(g,'b')))*0.01*T(m) + sum(g,n(g)*info(g,'d'))*(0.01*T(m))**2);
+ 305   
+ 306  Model CAMD / all /;
+ 307  options MINLP = BARON;
+ 308  *options optcr = 0;
+ 309  *options optca = 0;
+ 310   
+ 311  dyn(c)=no;
+ 312   
+ 313  *Integer cut
+ 314  yv(g,k,c)=0;
+ 315  alias(c,cc);
+ 316  *define property to minimise (in PO)
+ 317   
+ 318  solve CAMD minimising z using MINLP;
+ 319   
+      loop(cc,
+               solve CAMD minimising z using MINLP;
+       
+               yv(g,k,cc)=y.l(g,k);
+               nv(g,cc)=n.l(g);
+               zv(cc)=z.l;
+               pv(i,cc)= pi.l(i);
+               dyn(cc)=yes;
+      );
+       
+      display yv,nv,zv,pv;
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  28.2.0 r750fa45 WEX-WEI
+GAMS 28.2.0  r750fa45 Released Aug 19, 2019 WEX-WEI x86 64bit/MS Windows - 11/29/19 10:12:18 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Equation Listing    SOLVE CAMD Using MINLP From line 318
+
+
+---- OBJ  =E=  Objective function
+
+OBJ..  (0.0625)*pi(h_vap) - (0.025)*pi(cp_l) + z =E= 0 ; (LHS = -2.5, INFES = 2.5 ****)
+     
+
+---- int_eq  =E=  reformulate integer to binary variables
+
+int_eq(c)..  n(c) - y(c,k1) - 2*y(c,k2) - 4*y(c,k3) =E= 0 ; (LHS = 0)
+     
+int_eq(CH3)..  n(CH3) - y(CH3,k1) - 2*y(CH3,k2) - 4*y(CH3,k3) =E= 0 ; (LHS = 0)
+     
+int_eq(CH2)..  n(CH2) - y(CH2,k1) - 2*y(CH2,k2) - 4*y(CH2,k3) =E= 0 ; (LHS = 0)
+     
+REMAINING 31 ENTRIES SKIPPED
+
+
+---- MT_eq  =E=  Only can be 1 molecule type
+
+MT_eq..  w(m) + w(a) + w(b) =E= 1 ; (LHS = 0, INFES = 1 ****)
+     
+
+---- M_eq  =E=  Relate m to binary molecule types
+
+M_eq..  - w(a) + w(b) + m =E= 0 ; (LHS = 0)
+     
+
+---- ARO  =E=  Relate indicator variable m to number of aromatic groups
+
+ARO..  n(ACH) + n(AC) + n(ACCH3) + n(ACCH2) + n(ACCH) + n(ACOH) - 6*w(m) - 10*w(b) =E= 0 ; (LHS = 0)
+     
+
+---- octet  =E=  Octet rule - so that there is no free bonds
+
+octet..  - 2*n(c) + n(CH3) - n(CH) + n(CH2--CH) - n(CH--C) - 2*n(C--C) + n(CH2--C--CH) - n(AC) - n(ACCH2) - 2*n(ACCH) + n(OH) + n(CH3CO) + n(CHO) + n(CH3COO) + n(CH3O) - n(CH-O) - n(CH2NH) - n(CH2N) + n(CH2CN) + n(COOH) + n(I) + n(Br) + n(CH---C) - 2*m
+      =E= 0 ; (LHS = 2, INFES = 2 ****)
+     
+
+---- unphysical  =L=  To prevent unphysical combinations
+
+unphysical(c)..  2*n(c) - n(CH3) - n(CH2) - n(CH) - n(CH2--CH) - n(CH--CH) - n(CH2--C) - n(CH--C) - n(C--C) - n(CH2--C--CH) - n(ACH) - n(AC) - n(ACCH3) - n(ACCH2) - n(ACCH) - n(OH) - n(ACOH) - n(CH3CO) - n(CHO) - n(CH3COO) - n(CH3O) - n(CH2O) - n(CH-O)
+     
+      - n(CHNH2) - n(CH3NH) - n(CH2NH) - n(CH3N) - n(CH2N) - n(CH2CN) - n(COOH) - n(I) - n(Br) - n(CH---C) - n(CH2S) =L= -2 ; (LHS = -4)
+     
+unphysical(CH3)..  - n(c) - n(CH3) - n(CH2) - n(CH) - n(CH2--CH) - n(CH--CH) - n(CH2--C) - n(CH--C) - n(C--C) - n(CH2--C--CH) - n(ACH) - n(AC) - n(ACCH3) - n(ACCH2) - n(ACCH) - n(OH) - n(ACOH) - n(CH3CO) - n(CHO) - n(CH3COO) - n(CH3O) - n(CH2O) - n(CH-O)
+     
+      - n(CHNH2) - n(CH3NH) - n(CH2NH) - n(CH3N) - n(CH2N) - n(CH2CN) - n(COOH) - n(I) - n(Br) - n(CH---C) - n(CH2S) =L= -2 ; (LHS = -4)
+     
+unphysical(CH2)..  - n(c) - n(CH3) - n(CH) - n(CH2--CH) - n(CH--CH) - n(CH2--C) - n(CH--C) - n(C--C) - n(CH2--C--CH) - n(ACH) - n(AC) - n(ACCH3) - n(ACCH2) - n(ACCH) - n(OH) - n(ACOH) - n(CH3CO) - n(CHO) - n(CH3COO) - n(CH3O) - n(CH2O) - n(CH-O)
+     
+      - n(CHNH2) - n(CH3NH) - n(CH2NH) - n(CH3N) - n(CH2N) - n(CH2CN) - n(COOH) - n(I) - n(Br) - n(CH---C) - n(CH2S) =L= -2 ; (LHS = -2)
+     
+REMAINING 31 ENTRIES SKIPPED
+
+
+---- Tb_eq  =E=  boiling temperature
+
+Tb_eq..  - (16.2300679397318)*n(c) - (50.1564365031183)*n(CH3) - (52.0230634968817)*n(CH2) - (34.0222376234892)*n(CH) - (100.532807908825)*n(CH2--CH) - (103.950257933661)*n(CH--CH) - (96.52886481042)*n(CH2--C) - (101.265924250786)*n(CH--C)
+     
+      - (106.47668963519)*n(C--C) - (176.190414399249)*n(CH2--C--CH) - (52.4290971631988)*n(ACH) - (91.6621001710911)*n(AC) - (110.920502538771)*n(ACCH3) - (109.843385451736)*n(ACCH2) - (98.372934378277)*n(ACCH) - (181.316589436503)*n(OH)
+     
+      - (248.21063596225)*n(ACOH) - (201.144566808323)*n(CH3CO) - (160.868282852255)*n(CHO) - (205.047001490148)*n(CH3COO) - (127.08853755726)*n(CH3O) - (91.633903388708)*n(CH2O) - (65.1740428003753)*n(CH-O) - (146.527399332193)*n(CHNH2)
+     
+      - (176.940448810641)*n(CH3NH) - (147.339466664827)*n(CH2NH) - (122.075149649539)*n(CH3N) - (68.6366076770241)*n(CH2N) - (284.928485981566)*n(CH2CN) - (328.983138776974)*n(COOH) - (206.68241486837)*n(I) - (149.414749848226)*n(Br)
+     
+      - (133.528682653568)*n(CH---C) - (207.319662150229)*n(CH2S) + Tb =E= 0 ; (LHS = -63.1169534285016, INFES = 63.1169534285016 ****)
+     
+
+---- Tcrit_eq  =E=  critical temperature
+
+Tcrit_eq..  - (85.5226431210228)*n(c) - (29.3950694183865)*n(CH3) - (61.1689305816135)*n(CH2) - (70.6455604340342)*n(CH) - (87.8401258002747)*n(CH2--CH) - (129.083610065569)*n(CH--CH) - (114.001579930756)*n(CH2--C) - (156.919677530415)*n(CH--C)
+     
+      - (199.278986789424)*n(C--C) - (173.974107889596)*n(CH2--C--CH) - (65.4027594824085)*n(ACH) - (256.462828107774)*n(AC) - (143.866101622793)*n(ACCH3) - (180.842474923116)*n(ACCH2) - (183.338629736369)*n(ACCH) - (170.425188835806)*n(OH)
+     
+      - (453.941080056479)*n(ACOH) - (232.792273727781)*n(CH3CO) - (178.647610375041)*n(CHO) - (220.651327053635)*n(CH3COO) - (113.398999400398)*n(CH3O) - (106.367725421172)*n(CH2O) - (88.7457482833988)*n(CH-O) - (178.803510570395)*n(CHNH2)
+     
+      - (172.618301696292)*n(CH3NH) - (183.361401675016)*n(CH2NH) - (134.746816038375)*n(CH3N) - (96.6441076188081)*n(CH2N) - (356.960648420727)*n(CH2CN) - (416.188709154562)*n(COOH) - (304.700800912942)*n(I) - (184.57707286126)*n(Br)
+     
+      - (132.135049844297)*n(CH---C) - (311.653248950697)*n(CH2S) + Tcrit =E= 0 ; (LHS = -23.1221102558315, INFES = 23.1221102558315 ****)
+     
+
+---- Pcrit_eq  =E=  critical pressure
+
+Pcrit_eq..  - (4.96371210509942)*n(c) + (9.4978722011037)*n(CH3) + (5.05916810712057)*n(CH2) + (0.620464013137428)*n(CH) + (11.9320002526428)*n(CH2--CH) + (8.54331218089228)*n(CH--CH) + (10.6433442253574)*n(CH2--C) + (6.01372812733199)*n(CH--C)
+     
+      + (0.954560020211427)*n(C--C) + (14.9388643163088)*n(CH2--C--CH) + (3.57960007579285)*n(ACH) + (1.002288021222)*n(AC) + (9.25923219605085)*n(ACCH3) + (5.82281612328971)*n(ACCH2) + (1.336384028296)*n(ACCH) + (2.43412805153914)*n(OH)
+     
+      - (3.53187207478228)*n(ACOH) + (11.9797282536534)*n(CH3CO) + (6.72964814249056)*n(CHO) + (13.8411202930657)*n(CH3COO) + (9.73651220615656)*n(CH3O) + (7.20692815259628)*n(CH2O) + (4.72507210004657)*n(CH-O) + (5.10689610813114)*n(CHNH2)
+     
+      + (6.01372812733199)*n(CH3NH) + (4.96371210509942)*n(CH2NH) + (7.58875216068085)*n(CH3N) + (2.338672049518)*n(CH2N) + (17.2298083648163)*n(CH2CN) + (5.48872011621571)*n(COOH) + (1.336384028296)*n(I) - (0.859104018190285)*n(Br)
+     
+      + (7.06374414956456)*n(CH---C) + (5.29780811217342)*n(CH2S) + Pcrit =E= 1.3705 ; (LHS = -23.4735416146216, INFES = 24.8440416146216 ****)
+     
+
+---- Tcrit_constraint  =G=  
+
+Tcrit_constraint..  Tcrit =G= 316 ; (LHS = 400)
+     
+
+---- k_eq  =E=  vapour pressure eq1
+
+k_eq..  (0.00816326530612245)*Tb - (0.00408163265306122)*Tcrit + kvap - (1.14285714285714)*h + (1.14285714285714)*Gvap =E= 0 ; (LHS = 1.57142857142857, INFES = 1.57142857142857 ****)
+     
+
+---- h_eq  =E=  vapour pressure eq2
+
+h_eq..  - (0.0267263775090275)*Tb + (0.0133631887545137)*Tcrit - (0.0657948844477342)*Pcrit + h =E= 0 ; (LHS = -1.67263775090275, INFES = 1.67263775090275 ****)
+     
+
+---- G_eq  =E=  vapour pressure eq3
+
+G_eq..  - 0.4605*h + Gvap =E= 0.4835 ; (LHS = 0.5395, INFES = 0.056 ****)
+     
+
+---- ln_newvp_er_eq  =E=  vapour presure of new refrigerant at Te over Tcrit
+
+ln_newvp_er_eq..  (0.00850511039420215)*Tcrit + (0.172691629979396)*kvap + (0.955393095180861)*Gvap + vp_er =E= 0 ; (LHS = 5.95539309518086, INFES = 5.95539309518086 ****)
+     
+
+---- ln_newvp_cr_eq  =E=  vapour pressure of new refrigerant at Tc over Tcrit
+
+ln_newvp_cr_eq..  (0.00648102034810127)*Tcrit + (0.0444293544303797)*kvap + (0.520252139240506)*Gvap + vp_cr =E= 0 ; (LHS = 5.52025213924051, INFES = 5.52025213924051 ****)
+     
+
+---- newvp_e  =E=  vapour pressure of new refrigerant at Te
+
+newvp_e..  pi(vp_e) - (148.413159102577)*Pcrit - (2226.19738653865)*vp_er =E= 0 ; (LHS = -2223.19738653865, INFES = 2223.19738653865 ****)
+     
+
+---- newvp_c  =E=  vapour pressure of new refrigerant at Tc
+
+newvp_c..  pi(vp_c) - (148.413159102577)*Pcrit - (2226.19738653865)*vp_cr =E= 0 ; (LHS = -2216.19738653865, INFES = 2216.19738653865 ****)
+     
+
+---- newh_vap298_eq  =E=  equation for heat of vaporisation of new refrigerant at 298K
+
+newh_vap298_eq..  - 1.284*n(c) - 4.116*n(CH3) - 4.65*n(CH2) - 2.771*n(CH) - 6.714*n(CH2--CH) - 7.37*n(CH--CH) - 6.797*n(CH2--C) - 8.178*n(CH--C) - 9.342*n(C--C) - 12.318*n(CH2--C--CH) - 4.098*n(ACH) - 12.552*n(AC) - 9.776*n(ACCH3) - 10.185*n(ACCH2)
+     
+      - 8.834*n(ACCH) - 24.529*n(OH) - 40.246*n(ACOH) - 18.999*n(CH3CO) - 12.909*n(CHO) - 22.709*n(CH3COO) - 10.919*n(CH3O) - 7.478*n(CH2O) - 5.708*n(CH-O) - 11.876*n(CHNH2) - 14.452*n(CH3NH) - 14.481*n(CH2NH) - 6.947*n(CH3N) - 6.918*n(CH2N)
+     
+      - 23.34*n(CH2CN) - 43.046*n(COOH) - 14.364*n(I) - 11.423*n(Br) - 7.751*n(CH---C) - 17.117*n(CH2S) + h_vap298 =E= 6.829 ; (LHS = 12.468, INFES = 5.639 ****)
+     
+
+---- newh_vap  =E=  heat of vaporisation of new refrigerant at Te using Watson eqn
+
+newh_vap..  pi(h_vap) + (0.0235716492093535)*Tcrit - (1.08567873371721)*h_vap298 =E= 0 ; (LHS = 7.42963798848369, INFES = 7.42963798848369 ****)
+     
+
+---- theta_eq  =E=  theta to be used in CaG cp equation
+
+theta_eq..  theta =E= -0.00571428571428571 ; (LHS = 1, INFES = 1.00571428571429 ****)
+     
+
+---- omega_eq  =E=  equation for omega accentric factor
+
+omega_eq..  (0.0998347316677284)*n(c) - (0.0841911127454348)*n(CH3) - (0.0418111269377666)*n(CH2) + (0.0201944898815063)*n(CH) - (0.116047209459924)*n(CH2--CH) - (0.0716762176075999)*n(CH--CH) - (0.0634277639940269)*n(CH2--C)
+     
+      - (0.0668409172134364)*n(CH--C) + (0.0597301813396666)*n(C--C) - (0.0432332741125206)*n(CH2--C--CH) - (0.00767959474367142)*n(ACH) - (0.094999431273565)*n(AC) - (0.0415266975028158)*n(ACCH3) + (0.0250297902756698)*n(ACCH2)
+     
+      - (0.433470458865009)*n(ACCH) - (0.209624493558735)*n(OH) - (0.288695876475055)*n(ACOH) - (0.180043832323852)*n(CH3CO) - (0.322258549799249)*n(CHO) - (0.2150286528228)*n(CH3COO) - (0.125717810248251)*n(CH3O) - (0.0620056168192729)*n(CH2O)
+     
+      - (0.144774582389954)*n(CH-O) - (0.271061251508106)*n(CHNH2) - (0.156436189222936)*n(CH3NH) - (0.109789761891006)*n(CH2NH) - (0.0213322076213095)*n(CH3N) - (0.225552541915979)*n(CH2N) - (0.474997156367825)*n(CH2CN) - (0.162124777921952)*n(COOH)
+     
+      - (0.0662720583435348)*n(I) - (0.0790713829163205)*n(Br) - (0.17577739079959)*n(CH---C) - (0.124580092508447)*n(CH2S) + omega =E= 0 ; (LHS = 0.79190357234154, INFES = 0.79190357234154 ****)
+     
+
+---- residualcp_eq  =E=  equation for residual heat capacity of new refrigerant at Tm
+
+residualcp_eq..  (70.2899815885265)*Tcrit - (3878.81440460092)*omega + cp_residual =E= 13.186797 ; (LHS = -3844.188385733, INFES = 3857.375182733 ****)
+     
+
+---- idealgascp_eq  =E=  equation for ideal gas heat capacity at Tm
+
+idealgascp_eq..  - (28.5946)*n(c) - (64.7843)*n(CH3) - (52.0246)*n(CH2) - (39.3915)*n(CH) - (86.8438)*n(CH2--CH) - (72.6016)*n(CH--CH) - (73.6947)*n(CH2--C) - (58.3772)*n(CH--C) - (45.2112)*n(C--C) - (110.3429)*n(CH2--C--CH) - (35.9535)*n(ACH)
+     
+      - (23.0634)*n(AC) - (87.4363)*n(ACCH3) - (74.2998)*n(ACCH2) - (61.5404)*n(ACCH) - (31.2776)*n(OH) - (59.7513)*n(ACOH) - (106.1233)*n(CH3CO) - (55.0131)*n(CHO) - (125.967)*n(CH3COO) - (84.7486)*n(CH3O) - (70.3124)*n(CH2O) - (54.645)*n(CH-O)
+     
+      - (87.8191)*n(CHNH2) - (102.5275)*n(CH3NH) - (86.4323)*n(CH2NH) - (90.8742)*n(CH3N) - (75.6934)*n(CH2N) - (92.2934)*n(CH2CN) - (74.3031)*n(COOH) - (22.8523)*n(I) - (23.2941)*n(Br) - (58.2888)*n(CH---C) - (81.397)*n(CH2S) - (67.8667)*theta + cp_ideal
+      =E= -19.7779 ; (LHS = -195.4176, INFES = 175.6397 ****)
+     
+
+---- newcp_l  =E=  liquid heat capacity of new refrigerant at Tm
+
+newcp_l..  pi(cp_l) - cp_residual - cp_ideal =E= 0 ; (LHS = 0)
+     
+
+---- IntCut  =L=  integer cut constraint
+
+                NONE
+
+
+---- eqAux1  =G=  at least 2 groups chosen
+
+eqAux1..  n(c) + n(CH3) + n(CH2) + n(CH) + n(CH2--CH) + n(CH--CH) + n(CH2--C) + n(CH--C) + n(C--C) + n(CH2--C--CH) + n(ACH) + n(AC) + n(ACCH3) + n(ACCH2) + n(ACCH) + n(OH) + n(ACOH) + n(CH3CO) + n(CHO) + n(CH3COO) + n(CH3O) + n(CH2O) + n(CH-O) + n(CHNH2)
+     
+      + n(CH3NH) + n(CH2NH) + n(CH3N) + n(CH2N) + n(CH2CN) + n(COOH) + n(I) + n(Br) + n(CH---C) + n(CH2S) =G= 1 ; (LHS = 4)
+     
+GAMS 28.2.0  r750fa45 Released Aug 19, 2019 WEX-WEI x86 64bit/MS Windows - 11/29/19 10:12:18 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Column Listing      SOLVE CAMD Using MINLP From line 318
+
+
+---- pi  Property value
+
+pi(vp_e)
+                (.LO, .L, .UP, .M = 0, 3, +INF, 0)
+        1       newvp_e
+
+pi(vp_c)
+                (.LO, .L, .UP, .M = 0, 10, +INF, 0)
+        1       newvp_c
+
+pi(h_vap)
+                (.LO, .L, .UP, .M = 0, 40, +INF, 0)
+       (0.0625) OBJ
+        1       newh_vap
+
+REMAINING ENTRY SKIPPED
+
+---- n  Number of selected units of group type g
+
+n(c)
+                (.LO, .L, .UP, .M = 0, 0, 3, 0)
+        1       int_eq(c)
+       -2       octet
+        2       unphysical(c)
+       -1       unphysical(CH3)
+       -1       unphysical(CH2)
+       -1       unphysical(CH)
+       -1       unphysical(CH2--CH)
+       -1       unphysical(CH--CH)
+       -1       unphysical(CH2--C)
+       -1       unphysical(CH--C)
+       -1       unphysical(C--C)
+       -1       unphysical(CH2--C--CH)
+       -1       unphysical(ACH)
+       -1       unphysical(AC)
+       -1       unphysical(ACCH3)
+       -1       unphysical(ACCH2)
+       -1       unphysical(ACCH)
+       -1       unphysical(OH)
+       -1       unphysical(ACOH)
+       -1       unphysical(CH3CO)
+       -1       unphysical(CHO)
+       -1       unphysical(CH3COO)
+       -1       unphysical(CH3O)
+       -1       unphysical(CH2O)
+       -1       unphysical(CH-O)
+       -1       unphysical(CHNH2)
+       -1       unphysical(CH3NH)
+       -1       unphysical(CH2NH)
+       -1       unphysical(CH3N)
+       -1       unphysical(CH2N)
+       -1       unphysical(CH2CN)
+       -1       unphysical(COOH)
+       -1       unphysical(I)
+       -1       unphysical(Br)
+       -1       unphysical(CH---C)
+       -1       unphysical(CH2S)
+     (-16.2301) Tb_eq
+     (-85.5226) Tcrit_eq
+      (-4.9637) Pcrit_eq
+       -1.284   newh_vap298_eq
+       (0.0998) omega_eq
+     (-28.5946) idealgascp_eq
+        1       eqAux1
+
+n(CH3)
+                (.LO, .L, .UP, .M = 0, 2, 3, 0)
+        1       int_eq(CH3)
+        1       octet
+       -1       unphysical(c)
+       -1       unphysical(CH3)
+       -1       unphysical(CH2)
+       -1       unphysical(CH)
+       -1       unphysical(CH2--CH)
+       -1       unphysical(CH--CH)
+       -1       unphysical(CH2--C)
+       -1       unphysical(CH--C)
+       -1       unphysical(C--C)
+       -1       unphysical(CH2--C--CH)
+       -1       unphysical(ACH)
+       -1       unphysical(AC)
+       -1       unphysical(ACCH3)
+       -1       unphysical(ACCH2)
+       -1       unphysical(ACCH)
+       -1       unphysical(OH)
+       -1       unphysical(ACOH)
+       -1       unphysical(CH3CO)
+       -1       unphysical(CHO)
+       -1       unphysical(CH3COO)
+       -1       unphysical(CH3O)
+       -1       unphysical(CH2O)
+       -1       unphysical(CH-O)
+       -1       unphysical(CHNH2)
+       -1       unphysical(CH3NH)
+       -1       unphysical(CH2NH)
+       -1       unphysical(CH3N)
+       -1       unphysical(CH2N)
+       -1       unphysical(CH2CN)
+       -1       unphysical(COOH)
+       -1       unphysical(I)
+       -1       unphysical(Br)
+       -1       unphysical(CH---C)
+       -1       unphysical(CH2S)
+     (-50.1564) Tb_eq
+     (-29.3951) Tcrit_eq
+       (9.4979) Pcrit_eq
+       -4.116   newh_vap298_eq
+      (-0.0842) omega_eq
+     (-64.7843) idealgascp_eq
+        1       eqAux1
+
+n(CH2)
+                (.LO, .L, .UP, .M = 0, 2, 3, 0)
+        1       int_eq(CH2)
+       -1       unphysical(c)
+       -1       unphysical(CH3)
+       -1       unphysical(CH)
+       -1       unphysical(CH2--CH)
+       -1       unphysical(CH--CH)
+       -1       unphysical(CH2--C)
+       -1       unphysical(CH--C)
+       -1       unphysical(C--C)
+       -1       unphysical(CH2--C--CH)
+       -1       unphysical(ACH)
+       -1       unphysical(AC)
+       -1       unphysical(ACCH3)
+       -1       unphysical(ACCH2)
+       -1       unphysical(ACCH)
+       -1       unphysical(OH)
+       -1       unphysical(ACOH)
+       -1       unphysical(CH3CO)
+       -1       unphysical(CHO)
+       -1       unphysical(CH3COO)
+       -1       unphysical(CH3O)
+       -1       unphysical(CH2O)
+       -1       unphysical(CH-O)
+       -1       unphysical(CHNH2)
+       -1       unphysical(CH3NH)
+       -1       unphysical(CH2NH)
+       -1       unphysical(CH3N)
+       -1       unphysical(CH2N)
+       -1       unphysical(CH2CN)
+       -1       unphysical(COOH)
+       -1       unphysical(I)
+       -1       unphysical(Br)
+       -1       unphysical(CH---C)
+       -1       unphysical(CH2S)
+     (-52.0231) Tb_eq
+     (-61.1689) Tcrit_eq
+       (5.0592) Pcrit_eq
+       -4.65    newh_vap298_eq
+      (-0.0418) omega_eq
+     (-52.0246) idealgascp_eq
+        1       eqAux1
+
+REMAINING 31 ENTRIES SKIPPED
+
+---- y  binary auxiliar variable
+
+y(c,k1)
+                (.LO, .L, .UP, .M = 0, 0, 1, 0)
+       -1       int_eq(c)
+
+y(c,k2)
+                (.LO, .L, .UP, .M = 0, 0, 1, 0)
+       -2       int_eq(c)
+
+y(c,k3)
+                (.LO, .L, .UP, .M = 0, 0, 1, 0)
+       -4       int_eq(c)
+
+REMAINING 99 ENTRIES SKIPPED
+
+---- w  
+
+w(m)
+                (.LO, .L, .UP, .M = 0, 0, 1, 0)
+        1       MT_eq
+       -6       ARO
+
+w(a)
+                (.LO, .L, .UP, .M = 0, 0, 1, 0)
+        1       MT_eq
+       -1       M_eq
+
+w(b)
+                (.LO, .L, .UP, .M = 0, 0, 1, 0)
+        1       MT_eq
+        1       M_eq
+      -10       ARO
+
+
+---- m  Molecule type 1 = acyclic, 0 = monocyclic, -1 = bicyclic
+
+m
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+        1       M_eq
+       -2       octet
+
+
+---- z  Obj function
+
+z
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+        1       OBJ
+
+
+---- Tb  Boiling temperature
+
+Tb
+                (.LO, .L, .UP, .M = 0, 200, +INF, 0)
+        1       Tb_eq
+       (0.0082) k_eq
+      (-0.0267) h_eq
+
+
+---- Tcrit  Critical temperature
+
+Tcrit
+                (.LO, .L, .UP, .M = 0, 400, +INF, 0)
+        1       Tcrit_eq
+        1       Tcrit_constraint
+      (-0.0041) k_eq
+       (0.0134) h_eq
+       (0.0085) ln_newvp_er_eq
+       (0.0065) ln_newvp_cr_eq
+       (0.0236) newh_vap
+      (70.29)   residualcp_eq
+
+
+---- Pcrit  Critical pressure
+
+Pcrit
+                (.LO, .L, .UP, .M = 0, 15, +INF, 0)
+        1       Pcrit_eq
+      (-0.0658) h_eq
+    (-148.4132) newvp_e
+    (-148.4132) newvp_c
+
+
+---- kvap  k for vap pressure calculation
+
+kvap
+                (.LO, .L, .UP, .M = -INF, 1, +INF, 0)
+        1       k_eq
+       (0.1727) ln_newvp_er_eq
+       (0.0444) ln_newvp_cr_eq
+
+
+---- h  h for vap pressure calculation
+
+h
+                (.LO, .L, .UP, .M = -INF, 1, +INF, 0)
+      (-1.1429) k_eq
+        1       h_eq
+       -0.4605  G_eq
+
+
+---- Gvap  G for vap pressure calculation
+
+Gvap
+                (.LO, .L, .UP, .M = -INF, 1, +INF, 0)
+       (1.1429) k_eq
+        1       G_eq
+       (0.9554) ln_newvp_er_eq
+       (0.5203) ln_newvp_cr_eq
+
+
+---- vp_er  Vapour pressure @ reduced Te
+
+vp_er
+                (.LO, .L, .UP, .M = 0, 5, +INF, 0)
+        1       ln_newvp_er_eq
+   (-2226.1974) newvp_e
+
+
+---- vp_cr  Vapour pressure @ reduced Tc
+
+vp_cr
+                (.LO, .L, .UP, .M = 0, 5, +INF, 0)
+        1       ln_newvp_cr_eq
+   (-2226.1974) newvp_c
+
+
+---- h_vap298  Vapour pressure @ 298K
+
+h_vap298
+                (.LO, .L, .UP, .M = 0, 30, +INF, 0)
+        1       newh_vap298_eq
+      (-1.0857) newh_vap
+
+
+---- theta  Theta to be used in CaG cp calculation @ Tm
+
+theta
+                (.LO, .L, .UP, .M = -INF, 1, +INF, 0)
+        1       theta_eq
+     (-67.8667) idealgascp_eq
+
+
+---- omega  Accentric factor to be used in cp calculation
+
+omega
+                (.LO, .L, .UP, .M = -INF, 1, +INF, 0)
+        1       omega_eq
+   (-3878.8144) residualcp_eq
+
+
+---- cp_residual  Residual heat capacity @ Tm
+
+cp_residual
+                (.LO, .L, .UP, .M = 0, 50, +INF, 0)
+        1       residualcp_eq
+       -1       newcp_l
+
+
+---- cp_ideal  Ideal gas heat capacity @ Tm
+
+cp_ideal
+                (.LO, .L, .UP, .M = 0, 50, +INF, 0)
+        1       idealgascp_eq
+       -1       newcp_l
+
+GAMS 28.2.0  r750fa45 Released Aug 19, 2019 WEX-WEI x86 64bit/MS Windows - 11/29/19 10:12:18 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE CAMD Using MINLP From line 318
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS          27     SINGLE EQUATIONS           92
+BLOCKS OF VARIABLES          19     SINGLE VARIABLES          158
+NON ZERO ELEMENTS         1,603     NON LINEAR N-Z            194
+DERIVATIVE POOL              20     CONSTANT POOL             274
+CODE LENGTH                 681     DISCRETE VARIABLES        139
+
+
+
+**** THE MODEL EXCEEDS THE DEMO LIMITS
+**** MAX MATRIX ROWS          300
+**** MAX MATRIX COLUMNS       300
+**** MAX NON ZERO ELEMENTS   2000
+**** MAX NON LINEAR N-Z      1000
+**** MAX DISCRETE VARIABLES    50
+**** Terminated due to a licensing error
+
+     GAMS Development Corporation, USA              G871201/0000CA-ANY
+     Free Demo, +1 202-342-0180, support@gams.com, www.gams.com       
+     10525581000S                                                   00
+     01234567000000                                                   
+     DC0000       Ref: Generated by Base            A Demo            
