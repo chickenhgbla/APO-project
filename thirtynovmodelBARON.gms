@@ -28,7 +28,7 @@ Set
     
 
 
-    c integer cuts /1*2/
+    c integer cuts /1*10/
     
     dyn(c) dynamic set of c;
     
@@ -233,7 +233,7 @@ eqAux2.. sum(g,n(g)) =L= 14;
 
 IntCut(c)$(dyn(c)).. sum((g,k),yv(g,k,c)*y(g,k))-sum((g,k),(1-yv(g,k,c))*y(g,k)) =L= sum((g,k),yv(g,k,c)) - 1;
 
-
+y.fx(g,k)$(ord(k) gt (Kmax+1))=0;
 n.lo(g)=nL(g);
 n.up(g)=nU(g);
 n.l('CH3')=2;
@@ -264,6 +264,8 @@ cp_ideal.l = 50;
 
 Model CAMD / all /;
 options MINLP = BARON;
+options optcr=0;
+options optca=0;
 
 dyn(c)=no;
 
