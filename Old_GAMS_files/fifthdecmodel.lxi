@@ -1,0 +1,55 @@
+B 3 C o m p i l a t i o n
+B 327 Equation Listing    SOLVE CAMD Using MINLP From line 301
+D 330 OBJ
+D 335 int_eq
+D 346 pressure1
+D 351 pressure2
+D 356 compare1
+D 361 compare2
+D 366 MT_eq
+D 371 M_eq
+D 376 ARO
+D 381 octet
+D 387 unphysical
+D 404 Tb_eq
+D 417 Tcrit_eq
+D 430 Pcrit_eq
+D 443 Tcrit_constraint
+D 448 k_eq
+D 453 h_eq
+D 458 G_eq
+D 463 ln_newvp_er_eq
+D 468 ln_newvp_cr_eq
+D 473 newvp_e
+D 478 newvp_c
+D 483 newh_vap298_eq
+D 492 newh_vap
+D 497 theta_eq
+D 502 omega_eq
+D 515 residualcp_eq
+D 520 idealgascp_eq
+D 531 newcp_l
+D 536 eqAux1
+D 543 eqAux2
+D 550 IntCut
+B 556 Column Listing      SOLVE CAMD Using MINLP From line 301
+E 559 pi
+E 579 n
+E 728 y
+E 744 w
+E 763 mo
+E 770 z
+E 777 Tb
+E 786 Tcrit
+E 800 Pcrit
+E 810 kvap
+E 819 h
+E 828 Gvap
+E 838 vp_er
+E 846 vp_cr
+E 854 h_vap298
+E 862 theta
+E 870 omega
+E 878 cp_residual
+E 886 cp_ideal
+B 895 Model Statistics    SOLVE CAMD Using MINLP From line 301

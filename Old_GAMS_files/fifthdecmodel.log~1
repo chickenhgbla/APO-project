@@ -1,0 +1,27 @@
+--- Job fifthdecmodel.gms Start 12/05/19 16:39:07 28.2.0 r750fa45 WEX-WEI x86 64bit/MS Windows
+--- GAMS Parameters defined
+    Input D:\OneDrive - Imperial College London\School Work\Year 4\Advanced Process Optimisation\Project\fifthdecmodel.gms
+    PageSize 0
+    ScrDir D:\OneDrive - Imperial College London\School Work\Year 4\Advanced Process Optimisation\Project\225a\
+    SysDir C:\GAMS\win64\28.2\
+    LogOption 3
+    ErrMsg 1
+    ErrorLog 99
+    IDE 1
+    LstTitleLeftAligned 1
+GAMS 28.2.0   Copyright (C) 1987-2019 GAMS Development. All rights reserved
+Licensee: GAMS Development Corporation, USA              G871201/0000CA-ANY
+          Free Demo, +1 202-342-0180, support@gams.com, www.gams.com DC0000
+--- Starting compilation
+--- fifthdecmodel.gms(318) 3 Mb
+--- Starting execution: elapsed 0:00:00.048
+--- fifthdecmodel.gms(300) 4 Mb
+--- Generating MINLP model CAMD
+--- fifthdecmodel.gms(301) 6 Mb
+--- LOOPS cc = 1
+---   101 rows  202 columns  1,841 non-zeroes
+---   709 nl-code  204 nl-non-zeroes
+---   183 discrete-columns
+*** Status: Terminated due to a licensing error
+***         Inspect listing file for more information
+--- Job fifthdecmodel.gms Stop 12/05/19 16:39:07 elapsed 0:00:00.267
