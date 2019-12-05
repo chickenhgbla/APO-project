@@ -1,0 +1,27 @@
+--- Job thirtynovmodelBARON.gms Start 12/04/19 11:48:11 28.2.0 r750fa45 WEX-WEI x86 64bit/MS Windows
+--- GAMS Parameters defined
+    Input C:\Users\Tricia\OneDrive - Imperial College London\Attachments\Year 4\Advanced Process Optimisation\APO_Project\thirtynovmodelBARON.gms
+    PageSize 0
+    ScrDir C:\Users\Tricia\OneDrive - Imperial College London\Attachments\Year 4\Advanced Process Optimisation\APO_Project\225a\
+    SysDir C:\GAMS\win64\28.2\
+    LogOption 3
+    ErrMsg 1
+    ErrorLog 99
+    IDE 1
+    LstTitleLeftAligned 1
+GAMS 28.2.0   Copyright (C) 1987-2019 GAMS Development. All rights reserved
+Licensee: GAMS Development Corporation, USA              G871201/0000CA-ANY
+          Free Demo, +1 202-342-0180, support@gams.com, www.gams.com DC0000
+--- Starting compilation
+--- thirtynovmodelBARON.gms(294) 3 Mb
+--- Starting execution: elapsed 0:00:00.012
+--- thirtynovmodelBARON.gms(276) 4 Mb
+--- Generating MINLP model CAMD
+--- thirtynovmodelBARON.gms(277) 6 Mb
+--- LOOPS cc = 1
+---   82 rows  130 columns  1,182 non-zeroes
+---   597 nl-code  164 nl-non-zeroes
+---   112 discrete-columns
+*** Status: Terminated due to a licensing error
+***         Inspect listing file for more information
+--- Job thirtynovmodelBARON.gms Stop 12/04/19 11:48:11 elapsed 0:00:00.045

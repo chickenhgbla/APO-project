@@ -1,0 +1,692 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+SHELL=/bin/csh
+Hostname=psl204
+Scratch dir=/work/gh1514/gams/USETHIS1.2665630.wk
+Parameters=
+Gams command= gams  USETHIS1.gms procDirPath=/work/gh1514/gams/USETHIS1.2665630.wk O=USETHIS1.2665630.lst lo=3 SolveLink=5 
+Allocated cpu cores= 1
+Requested Gams threads= NotSet
+Allocated Gams threads= 1
+--- Job USETHIS1.gms Start 12/05/19 18:48:45 28.2.0 r750fa45 LEX-LEG x86 64bit/Linux
+--- GAMS Parameters defined
+    Input /home/ps/ce-fs2/gh1514/USETHIS1.gms
+    Output /home/ps/ce-fs2/gh1514/USETHIS1.2665630.lst
+    ScrDir /work/gh1514/gams/USETHIS1.2665630.wk/225a/
+    SysDir /rvol/GAMS/gams28.2.0_linux_x64_64_sfx/
+    LogOption 3
+    SolveLink 5
+    Threads 1
+    ProcDirPath /work/gh1514/gams/USETHIS1.2665630.wk
+GAMS 28.2.0   Copyright (C) 1987-2019 GAMS Development. All rights reserved
+Licensee: Medium MUD - 10 User License                   S190611/0001AP-LNX
+          Imperial College London, Centre for Process Systems EngineerDC621
+          License for teaching and research at degree granting institutions
+          License Admin: Graham Stuart, g.stuart@imperial.ac.uk            
+--- Starting compilation
+--- USETHIS1.gms(296) 3 Mb
+--- Starting execution: elapsed 0:00:00.008
+--- USETHIS1.gms(276) 4 Mb
+--- Generating MINLP model CAMD
+--- USETHIS1.gms(279) 6 Mb
+--- Reset Solvelink = 2
+--- LOOPS cc = 1
+---   82 rows  130 columns  1,182 non-zeroes
+---   597 nl-code  164 nl-non-zeroes
+---   112 discrete-columns
+--- USETHIS1.gms(279) 4 Mb
+--- Executing BARON (Solvelink=2): elapsed 0:00:00.013
+
+GAMS/BARON       28.2.0 r750fa45 Released Aug 19, 2019 LEG x86 64bit/Linux    
+
+===========================================================================
+ BARON version 19.7.13. Built: LNX-64 Sat Jul 13 11:51:07 EDT 2019
+
+ BARON is a product of The Optimization Firm.
+ For information on BARON, see https://minlp.com/about-baron
+
+ If you use this software, please cite publications from
+ https://minlp.com/baron-publications, such as: 
+
+ Kilinc, M. and N. V. Sahinidis, Exploiting integrality in the global
+ optimization of mixed-integer nonlinear programming problems in BARON,
+ Optimization Methods and Software, 33, 540-562, 2018.
+===========================================================================
+ This BARON run may utilize the following subsolver(s)
+ For LP/MIP/QP: ILOG CPLEX                                      
+ For NLP: MINOS, SNOPT, GAMS external NLP, IPOPT, FILTERSD, FILTERSQP
+===========================================================================
+ Doing local search
+ Solving bounding LP
+ Starting multi-start local search
+ Done with local search
+===========================================================================
+  Iteration    Open nodes         Time (s)    Lower bound      Upper bound
+          1             1             0.14     0.293897E-01    0.100000E+52
+*       968            29            16.88     1.38936          5.66421    
+*      1416            25            19.01     1.46107          4.67419    
+*      2324             8            23.80     2.04479          3.40139    
+       2364             0            24.09     3.09217          3.40139    
+
+ Cleaning up
+
+                         *** Normal completion ***            
+
+ Wall clock time:                    24.39
+ Total CPU time used:                24.09
+
+ Total no. of BaR iterations:    2364
+ Best solution found at node:    2324
+ Max. no. of nodes in memory:      34
+ 
+ All done
+===========================================================================
+
+Solution      = 3.40139130824118  found at node 2324
+Best possible = 3.09217391658
+Absolute gap  = 0.30921739166118  optca = 1E-9
+Relative gap  = 0.0909090909099409  optcr = 0.1
+  (Note that BARON uses a different formula to compute the relative gap as
+   was used for the above reported value.)
+
+--- Reading solution for model CAMD
+***
+*** Solver did not provide marginals for model CAMD
+***
+--- USETHIS1.gms(276) 4 Mb
+--- Generating MINLP model CAMD
+--- USETHIS1.gms(279) 6 Mb
+--- Reset Solvelink = 2
+--- LOOPS cc = 2
+---   83 rows  158 columns  1,294 non-zeroes
+---   597 nl-code  164 nl-non-zeroes
+---   112 discrete-columns
+--- USETHIS1.gms(279) 4 Mb
+--- Executing BARON (Solvelink=2): elapsed 0:00:24.439
+
+GAMS/BARON       28.2.0 r750fa45 Released Aug 19, 2019 LEG x86 64bit/Linux    
+
+===========================================================================
+ BARON version 19.7.13. Built: LNX-64 Sat Jul 13 11:51:07 EDT 2019
+
+ BARON is a product of The Optimization Firm.
+ For information on BARON, see https://minlp.com/about-baron
+
+ If you use this software, please cite publications from
+ https://minlp.com/baron-publications, such as: 
+
+ Kilinc, M. and N. V. Sahinidis, Exploiting integrality in the global
+ optimization of mixed-integer nonlinear programming problems in BARON,
+ Optimization Methods and Software, 33, 540-562, 2018.
+===========================================================================
+ This BARON run may utilize the following subsolver(s)
+ For LP/MIP/QP: ILOG CPLEX                                      
+ For NLP: MINOS, SNOPT, GAMS external NLP, IPOPT, FILTERSD, FILTERSQP
+===========================================================================
+ Doing local search
+ Solving bounding LP
+ Starting multi-start local search
+ Done with local search
+===========================================================================
+  Iteration    Open nodes         Time (s)    Lower bound      Upper bound
+          1             1             0.14     0.293897E-01    0.100000E+52
+*       875            29            10.24     0.582119         5.44170    
+*      3204            17            24.39     1.39409          4.67419    
+       3382             0            25.30     4.24926          4.67419    
+
+ Cleaning up
+
+                         *** Normal completion ***            
+
+ Wall clock time:                    25.51
+ Total CPU time used:                25.30
+
+ Total no. of BaR iterations:    3382
+ Best solution found at node:    3204
+ Max. no. of nodes in memory:      42
+ 
+ All done
+===========================================================================
+
+Solution      = 4.67418747623655  found at node 3204
+Best possible = 4.24926134203
+Absolute gap  = 0.424926134206546  optca = 1E-9
+Relative gap  = 0.0909090909097805  optcr = 0.1
+  (Note that BARON uses a different formula to compute the relative gap as
+   was used for the above reported value.)
+
+--- Reading solution for model CAMD
+***
+*** Solver did not provide marginals for model CAMD
+***
+--- USETHIS1.gms(276) 4 Mb
+--- Generating MINLP model CAMD
+--- USETHIS1.gms(279) 6 Mb
+--- Reset Solvelink = 2
+--- LOOPS cc = 3
+---   84 rows  158 columns  1,406 non-zeroes
+---   597 nl-code  164 nl-non-zeroes
+---   112 discrete-columns
+--- USETHIS1.gms(279) 4 Mb
+--- Executing BARON (Solvelink=2): elapsed 0:00:50.012
+
+GAMS/BARON       28.2.0 r750fa45 Released Aug 19, 2019 LEG x86 64bit/Linux    
+
+===========================================================================
+ BARON version 19.7.13. Built: LNX-64 Sat Jul 13 11:51:07 EDT 2019
+
+ BARON is a product of The Optimization Firm.
+ For information on BARON, see https://minlp.com/about-baron
+
+ If you use this software, please cite publications from
+ https://minlp.com/baron-publications, such as: 
+
+ Kilinc, M. and N. V. Sahinidis, Exploiting integrality in the global
+ optimization of mixed-integer nonlinear programming problems in BARON,
+ Optimization Methods and Software, 33, 540-562, 2018.
+===========================================================================
+ This BARON run may utilize the following subsolver(s)
+ For LP/MIP/QP: ILOG CPLEX                                      
+ For NLP: MINOS, SNOPT, GAMS external NLP, IPOPT, FILTERSD, FILTERSQP
+===========================================================================
+ Doing local search
+ Solving bounding LP
+ Starting multi-start local search
+ Done with local search
+===========================================================================
+  Iteration    Open nodes         Time (s)    Lower bound      Upper bound
+          1             1             0.15     0.293897E-01    0.100000E+52
+*      1584            37            19.02     1.18008          5.66421    
+       3287             0            29.42     5.14928          5.66421    
+
+ Cleaning up
+
+                         *** Normal completion ***            
+
+ Wall clock time:                    29.64
+ Total CPU time used:                29.42
+
+ Total no. of BaR iterations:    3287
+ Best solution found at node:    1584
+ Max. no. of nodes in memory:      39
+ 
+ All done
+===========================================================================
+
+Solution      = 5.6642082736364  found at node 1584
+Best possible = 5.14928024876
+Absolute gap  = 0.514928024876403  optca = 1E-9
+Relative gap  = 0.0909090909091557  optcr = 0.1
+  (Note that BARON uses a different formula to compute the relative gap as
+   was used for the above reported value.)
+
+--- Reading solution for model CAMD
+***
+*** Solver did not provide marginals for model CAMD
+***
+--- USETHIS1.gms(276) 4 Mb
+--- Generating MINLP model CAMD
+--- USETHIS1.gms(279) 6 Mb
+--- Reset Solvelink = 2
+--- LOOPS cc = 4
+---   85 rows  158 columns  1,518 non-zeroes
+---   597 nl-code  164 nl-non-zeroes
+---   112 discrete-columns
+--- USETHIS1.gms(279) 4 Mb
+--- Executing BARON (Solvelink=2): elapsed 0:01:19.712
+
+GAMS/BARON       28.2.0 r750fa45 Released Aug 19, 2019 LEG x86 64bit/Linux    
+
+===========================================================================
+ BARON version 19.7.13. Built: LNX-64 Sat Jul 13 11:51:07 EDT 2019
+
+ BARON is a product of The Optimization Firm.
+ For information on BARON, see https://minlp.com/about-baron
+
+ If you use this software, please cite publications from
+ https://minlp.com/baron-publications, such as: 
+
+ Kilinc, M. and N. V. Sahinidis, Exploiting integrality in the global
+ optimization of mixed-integer nonlinear programming problems in BARON,
+ Optimization Methods and Software, 33, 540-562, 2018.
+===========================================================================
+ This BARON run may utilize the following subsolver(s)
+ For LP/MIP/QP: ILOG CPLEX                                      
+ For NLP: MINOS, SNOPT, GAMS external NLP, IPOPT, FILTERSD, FILTERSQP
+===========================================================================
+ Doing local search
+ Solving bounding LP
+ Starting multi-start local search
+ Done with local search
+===========================================================================
+  Iteration    Open nodes         Time (s)    Lower bound      Upper bound
+          1             1             0.15     0.293897E-01    0.100000E+52
+*      1481            31            18.87     1.18008          5.44170    
+*      1494            32            18.95     1.18008          5.42847    
+*      1501            31            19.00     1.18008          5.41594    
+       3750             0            30.78     4.92261          5.41594    
+
+ Cleaning up
+
+                         *** Normal completion ***            
+
+ Wall clock time:                    31.09
+ Total CPU time used:                30.78
+
+ Total no. of BaR iterations:    3750
+ Best solution found at node:    1501
+ Max. no. of nodes in memory:      39
+ 
+ All done
+===========================================================================
+
+Solution      = 5.41593700402584  found at node 1501
+Best possible = 4.92261171427
+Absolute gap  = 0.493325289755835  optca = 1E-9
+Relative gap  = 0.0910877082560471  optcr = 0.1
+  (Note that BARON uses a different formula to compute the relative gap as
+   was used for the above reported value.)
+
+--- Reading solution for model CAMD
+***
+*** Solver did not provide marginals for model CAMD
+***
+--- USETHIS1.gms(276) 4 Mb
+--- Generating MINLP model CAMD
+--- USETHIS1.gms(279) 6 Mb
+--- Reset Solvelink = 2
+--- LOOPS cc = 5
+---   86 rows  158 columns  1,630 non-zeroes
+---   597 nl-code  164 nl-non-zeroes
+---   112 discrete-columns
+--- USETHIS1.gms(279) 4 Mb
+--- Executing BARON (Solvelink=2): elapsed 0:01:50.846
+
+GAMS/BARON       28.2.0 r750fa45 Released Aug 19, 2019 LEG x86 64bit/Linux    
+
+===========================================================================
+ BARON version 19.7.13. Built: LNX-64 Sat Jul 13 11:51:07 EDT 2019
+
+ BARON is a product of The Optimization Firm.
+ For information on BARON, see https://minlp.com/about-baron
+
+ If you use this software, please cite publications from
+ https://minlp.com/baron-publications, such as: 
+
+ Kilinc, M. and N. V. Sahinidis, Exploiting integrality in the global
+ optimization of mixed-integer nonlinear programming problems in BARON,
+ Optimization Methods and Software, 33, 540-562, 2018.
+===========================================================================
+ This BARON run may utilize the following subsolver(s)
+ For LP/MIP/QP: ILOG CPLEX                                      
+ For NLP: MINOS, SNOPT, GAMS external NLP, IPOPT, FILTERSD, FILTERSQP
+===========================================================================
+ Doing local search
+ Solving bounding LP
+ Starting multi-start local search
+ Done with local search
+===========================================================================
+  Iteration    Open nodes         Time (s)    Lower bound      Upper bound
+          1             1             0.15     0.293897E-01    0.100000E+52
+*      3337            22            28.62     1.55280          5.44170    
+*      3432            22            29.06     1.55280          5.42847    
+       4061             0            31.84     4.93497          5.42847    
+
+ Cleaning up
+
+                         *** Normal completion ***            
+
+ Wall clock time:                    32.46
+ Total CPU time used:                31.84
+
+ Total no. of BaR iterations:    4061
+ Best solution found at node:    3432
+ Max. no. of nodes in memory:      40
+ 
+ All done
+===========================================================================
+
+Solution      = 5.4284657901269  found at node 3432
+Best possible = 4.93496890012
+Absolute gap  = 0.493496890006901  optca = 1E-9
+Relative gap  = 0.0909090909082371  optcr = 0.1
+  (Note that BARON uses a different formula to compute the relative gap as
+   was used for the above reported value.)
+
+--- Reading solution for model CAMD
+***
+*** Solver did not provide marginals for model CAMD
+***
+--- USETHIS1.gms(276) 4 Mb
+--- Generating MINLP model CAMD
+--- USETHIS1.gms(279) 6 Mb
+--- Reset Solvelink = 2
+--- LOOPS cc = 6
+---   87 rows  158 columns  1,742 non-zeroes
+---   597 nl-code  164 nl-non-zeroes
+---   112 discrete-columns
+--- USETHIS1.gms(279) 4 Mb
+--- Executing BARON (Solvelink=2): elapsed 0:02:23.373
+
+GAMS/BARON       28.2.0 r750fa45 Released Aug 19, 2019 LEG x86 64bit/Linux    
+
+===========================================================================
+ BARON version 19.7.13. Built: LNX-64 Sat Jul 13 11:51:07 EDT 2019
+
+ BARON is a product of The Optimization Firm.
+ For information on BARON, see https://minlp.com/about-baron
+
+ If you use this software, please cite publications from
+ https://minlp.com/baron-publications, such as: 
+
+ Kilinc, M. and N. V. Sahinidis, Exploiting integrality in the global
+ optimization of mixed-integer nonlinear programming problems in BARON,
+ Optimization Methods and Software, 33, 540-562, 2018.
+===========================================================================
+ This BARON run may utilize the following subsolver(s)
+ For LP/MIP/QP: ILOG CPLEX                                      
+ For NLP: MINOS, SNOPT, GAMS external NLP, IPOPT, FILTERSD, FILTERSQP
+===========================================================================
+ Doing local search
+ Solving bounding LP
+ Starting multi-start local search
+ Done with local search
+===========================================================================
+  Iteration    Open nodes         Time (s)    Lower bound      Upper bound
+          1             1             0.15     0.293897E-01    0.100000E+52
+*      3627            24            28.03     1.80017          5.44170    
+       4185             0            30.68     4.92296          5.44170    
+
+ Cleaning up
+
+                         *** Normal completion ***            
+
+ Wall clock time:                    31.52
+ Total CPU time used:                30.68
+
+ Total no. of BaR iterations:    4185
+ Best solution found at node:    3627
+ Max. no. of nodes in memory:      39
+ 
+ All done
+===========================================================================
+
+Solution      = 5.44170278411976  found at node 3627
+Best possible = 4.92295573735
+Absolute gap  = 0.518747046769755  optca = 1E-9
+Relative gap  = 0.0953280741983169  optcr = 0.1
+  (Note that BARON uses a different formula to compute the relative gap as
+   was used for the above reported value.)
+
+--- Reading solution for model CAMD
+***
+*** Solver did not provide marginals for model CAMD
+***
+--- USETHIS1.gms(276) 4 Mb
+--- Generating MINLP model CAMD
+--- USETHIS1.gms(279) 6 Mb
+--- Reset Solvelink = 2
+--- LOOPS cc = 7
+---   88 rows  158 columns  1,854 non-zeroes
+---   597 nl-code  164 nl-non-zeroes
+---   112 discrete-columns
+--- USETHIS1.gms(279) 4 Mb
+--- Executing BARON (Solvelink=2): elapsed 0:02:54.943
+
+GAMS/BARON       28.2.0 r750fa45 Released Aug 19, 2019 LEG x86 64bit/Linux    
+
+===========================================================================
+ BARON version 19.7.13. Built: LNX-64 Sat Jul 13 11:51:07 EDT 2019
+
+ BARON is a product of The Optimization Firm.
+ For information on BARON, see https://minlp.com/about-baron
+
+ If you use this software, please cite publications from
+ https://minlp.com/baron-publications, such as: 
+
+ Kilinc, M. and N. V. Sahinidis, Exploiting integrality in the global
+ optimization of mixed-integer nonlinear programming problems in BARON,
+ Optimization Methods and Software, 33, 540-562, 2018.
+===========================================================================
+ This BARON run may utilize the following subsolver(s)
+ For LP/MIP/QP: ILOG CPLEX                                      
+ For NLP: MINOS, SNOPT, GAMS external NLP, IPOPT, FILTERSD, FILTERSQP
+===========================================================================
+ Doing local search
+ Solving bounding LP
+ Starting multi-start local search
+ Done with local search
+===========================================================================
+  Iteration    Open nodes         Time (s)    Lower bound      Upper bound
+          1             1             0.16     0.293897E-01    0.100000E+52
+       1723+           24            30.10     1.18008         0.100000E+52
+*      1945            22            34.32     1.18008          5.53460    
+       3373             0            44.52     5.03145          5.53460    
+
+ Cleaning up
+
+                         *** Normal completion ***            
+
+ Wall clock time:                    44.61
+ Total CPU time used:                44.52
+
+ Total no. of BaR iterations:    3373
+ Best solution found at node:    1945
+ Max. no. of nodes in memory:      31
+ 
+ All done
+===========================================================================
+
+Solution      = 5.53459679226614  found at node 1945
+Best possible = 5.03145162933
+Absolute gap  = 0.503145162936139  optca = 1E-9
+Relative gap  = 0.0909090909096065  optcr = 0.1
+  (Note that BARON uses a different formula to compute the relative gap as
+   was used for the above reported value.)
+
+--- Reading solution for model CAMD
+***
+*** Solver did not provide marginals for model CAMD
+***
+--- USETHIS1.gms(276) 4 Mb
+--- Generating MINLP model CAMD
+--- USETHIS1.gms(279) 6 Mb
+--- Reset Solvelink = 2
+--- LOOPS cc = 8
+---   89 rows  158 columns  1,966 non-zeroes
+---   597 nl-code  164 nl-non-zeroes
+---   112 discrete-columns
+--- USETHIS1.gms(279) 4 Mb
+--- Executing BARON (Solvelink=2): elapsed 0:03:39.610
+
+GAMS/BARON       28.2.0 r750fa45 Released Aug 19, 2019 LEG x86 64bit/Linux    
+
+===========================================================================
+ BARON version 19.7.13. Built: LNX-64 Sat Jul 13 11:51:07 EDT 2019
+
+ BARON is a product of The Optimization Firm.
+ For information on BARON, see https://minlp.com/about-baron
+
+ If you use this software, please cite publications from
+ https://minlp.com/baron-publications, such as: 
+
+ Kilinc, M. and N. V. Sahinidis, Exploiting integrality in the global
+ optimization of mixed-integer nonlinear programming problems in BARON,
+ Optimization Methods and Software, 33, 540-562, 2018.
+===========================================================================
+ This BARON run may utilize the following subsolver(s)
+ For LP/MIP/QP: ILOG CPLEX                                      
+ For NLP: MINOS, SNOPT, GAMS external NLP, IPOPT, FILTERSD, FILTERSQP
+===========================================================================
+ Doing local search
+ Solving bounding LP
+ Starting multi-start local search
+ Done with local search
+===========================================================================
+  Iteration    Open nodes         Time (s)    Lower bound      Upper bound
+          1             1             0.16     0.293897E-01    0.100000E+52
+*      1113            26            19.76     0.970910         5.54171    
+       3427             0            33.20     4.99221          5.54171    
+
+ Cleaning up
+
+                         *** Normal completion ***            
+
+ Wall clock time:                    33.37
+ Total CPU time used:                33.20
+
+ Total no. of BaR iterations:    3427
+ Best solution found at node:    1113
+ Max. no. of nodes in memory:      30
+ 
+ All done
+===========================================================================
+
+Solution      = 5.54170951502306  found at node 1113
+Best possible = 4.99221243246
+Absolute gap  = 0.549497082563056  optca = 1E-9
+Relative gap  = 0.0991566015998169  optcr = 0.1
+  (Note that BARON uses a different formula to compute the relative gap as
+   was used for the above reported value.)
+
+--- Reading solution for model CAMD
+***
+*** Solver did not provide marginals for model CAMD
+***
+--- USETHIS1.gms(276) 4 Mb
+--- Generating MINLP model CAMD
+--- USETHIS1.gms(279) 6 Mb
+--- Reset Solvelink = 2
+--- LOOPS cc = 9
+---   90 rows  158 columns  2,078 non-zeroes
+---   597 nl-code  164 nl-non-zeroes
+---   112 discrete-columns
+--- USETHIS1.gms(279) 4 Mb
+--- Executing BARON (Solvelink=2): elapsed 0:04:13.023
+
+GAMS/BARON       28.2.0 r750fa45 Released Aug 19, 2019 LEG x86 64bit/Linux    
+
+===========================================================================
+ BARON version 19.7.13. Built: LNX-64 Sat Jul 13 11:51:07 EDT 2019
+
+ BARON is a product of The Optimization Firm.
+ For information on BARON, see https://minlp.com/about-baron
+
+ If you use this software, please cite publications from
+ https://minlp.com/baron-publications, such as: 
+
+ Kilinc, M. and N. V. Sahinidis, Exploiting integrality in the global
+ optimization of mixed-integer nonlinear programming problems in BARON,
+ Optimization Methods and Software, 33, 540-562, 2018.
+===========================================================================
+ This BARON run may utilize the following subsolver(s)
+ For LP/MIP/QP: ILOG CPLEX                                      
+ For NLP: MINOS, SNOPT, GAMS external NLP, IPOPT, FILTERSD, FILTERSQP
+===========================================================================
+ Doing local search
+ Solving bounding LP
+ Starting multi-start local search
+ Done with local search
+===========================================================================
+  Iteration    Open nodes         Time (s)    Lower bound      Upper bound
+          1             1             0.16     0.293897E-01    0.100000E+52
+*      2428            13            27.89     1.49798          5.86731    
+       2981             0            31.31     5.33392          5.86731    
+
+ Cleaning up
+
+                         *** Normal completion ***            
+
+ Wall clock time:                    31.98
+ Total CPU time used:                31.31
+
+ Total no. of BaR iterations:    2981
+ Best solution found at node:    2428
+ Max. no. of nodes in memory:      33
+ 
+ All done
+===========================================================================
+
+Solution      = 5.8673115493378  found at node 2428
+Best possible = 5.33391959031
+Absolute gap  = 0.533391959027804  optca = 1E-9
+Relative gap  = 0.0909090909085957  optcr = 0.1
+  (Note that BARON uses a different formula to compute the relative gap as
+   was used for the above reported value.)
+
+--- Reading solution for model CAMD
+***
+*** Solver did not provide marginals for model CAMD
+***
+--- USETHIS1.gms(276) 4 Mb
+--- Generating MINLP model CAMD
+--- USETHIS1.gms(279) 6 Mb
+--- Reset Solvelink = 2
+--- LOOPS cc = 10
+---   91 rows  158 columns  2,190 non-zeroes
+---   597 nl-code  164 nl-non-zeroes
+---   112 discrete-columns
+--- USETHIS1.gms(279) 4 Mb
+--- Executing BARON (Solvelink=2): elapsed 0:04:45.044
+
+GAMS/BARON       28.2.0 r750fa45 Released Aug 19, 2019 LEG x86 64bit/Linux    
+
+===========================================================================
+ BARON version 19.7.13. Built: LNX-64 Sat Jul 13 11:51:07 EDT 2019
+
+ BARON is a product of The Optimization Firm.
+ For information on BARON, see https://minlp.com/about-baron
+
+ If you use this software, please cite publications from
+ https://minlp.com/baron-publications, such as: 
+
+ Kilinc, M. and N. V. Sahinidis, Exploiting integrality in the global
+ optimization of mixed-integer nonlinear programming problems in BARON,
+ Optimization Methods and Software, 33, 540-562, 2018.
+===========================================================================
+ This BARON run may utilize the following subsolver(s)
+ For LP/MIP/QP: ILOG CPLEX                                      
+ For NLP: MINOS, SNOPT, GAMS external NLP, IPOPT, FILTERSD, FILTERSQP
+===========================================================================
+ Doing local search
+ Solving bounding LP
+ Starting multi-start local search
+ Done with local search
+===========================================================================
+  Iteration    Open nodes         Time (s)    Lower bound      Upper bound
+          1             1             0.17     0.293897E-01    0.100000E+52
+*      3301             8            29.23     2.30888          5.63889    
+       3607             0            30.55     5.12627          5.63889    
+
+ Cleaning up
+
+                         *** Normal completion ***            
+
+ Wall clock time:                    31.30
+ Total CPU time used:                30.55
+
+ Total no. of BaR iterations:    3607
+ Best solution found at node:    3301
+ Max. no. of nodes in memory:      28
+ 
+ All done
+===========================================================================
+
+Solution      = 5.63889405944161  found at node 3301
+Best possible = 5.12626732677
+Absolute gap  = 0.512626732671605  optca = 1E-9
+Relative gap  = 0.0909090909082212  optcr = 0.1
+  (Note that BARON uses a different formula to compute the relative gap as
+   was used for the above reported value.)
+
+--- Reading solution for model CAMD
+***
+*** Solver did not provide marginals for model CAMD
+***
+--- USETHIS1.gms(276) 4 Mb--- USETHIS1.gms(288) 4 Mb
+*** Status: Normal completion
+--- Job USETHIS1.gms Stop 12/05/19 18:54:01 elapsed 0:05:16.426
+
+Execution Time : psl204 : User 290.98  System 21.03  Elapsed 5:16.62
+
+done
