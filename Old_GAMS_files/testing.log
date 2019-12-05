@@ -1,8 +1,8 @@
---- Job testing.gms Start 11/29/19 10:17:06 28.2.0 r750fa45 WEX-WEI x86 64bit/MS Windows
+--- Job testing.gms Start 12/05/19 16:46:02 28.2.0 r750fa45 WEX-WEI x86 64bit/MS Windows
 --- GAMS Parameters defined
-    Input C:\Users\Tricia\OneDrive - Imperial College London\Attachments\Year 4\Advanced Process Optimisation\APO_Project\testing.gms
+    Input D:\OneDrive - Imperial College London\School Work\Year 4\Advanced Process Optimisation\Project\testing.gms
     PageSize 0
-    ScrDir C:\Users\Tricia\OneDrive - Imperial College London\Attachments\Year 4\Advanced Process Optimisation\APO_Project\225a\
+    ScrDir D:\OneDrive - Imperial College London\School Work\Year 4\Advanced Process Optimisation\Project\225a\
     SysDir C:\GAMS\win64\28.2\
     LogOption 3
     ErrMsg 1
@@ -13,8 +13,8 @@ GAMS 28.2.0   Copyright (C) 1987-2019 GAMS Development. All rights reserved
 Licensee: GAMS Development Corporation, USA              G871201/0000CA-ANY
           Free Demo, +1 202-342-0180, support@gams.com, www.gams.com DC0000
 --- Starting compilation
---- testing.gms(388) 3 Mb
---- Starting execution: elapsed 0:00:00.043
---- testing.gms(186) 4 Mb
+--- testing.gms(413) 3 Mb
+--- Starting execution: elapsed 0:00:00.011
+--- testing.gms(211) 4 Mb
 *** Status: Normal completion
---- Job testing.gms Stop 11/29/19 10:17:06 elapsed 0:00:00.046
+--- Job testing.gms Stop 12/05/19 16:46:02 elapsed 0:00:00.027

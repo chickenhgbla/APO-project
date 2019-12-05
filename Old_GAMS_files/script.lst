@@ -1,4 +1,4 @@
-GAMS 28.2.0  r750fa45 Released Aug 19, 2019 WEX-WEI x86 64bit/MS Windows - 11/29/19 10:12:18 Page 1
+GAMS 28.2.0  r750fa45 Released Aug 19, 2019 WEX-WEI x86 64bit/MS Windows - 11/27/19 14:22:41 Page 1
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
 C o m p i l a t i o n
 
@@ -8,10 +8,10 @@ C o m p i l a t i o n
    3   
    4      pr 'Process pressure conditions'     / atm 'Atmospheric', c 'Condensing'/
    5   
-   6      i 'Types of properties'             / vp_e 'bar, Vapour pressure @ evaporating temperature',
-   7                                            vp_c 'bar, Vapour pressure @ condensing temperature',
-   8                                            h_vap 'kj/mol Heat of vaporisation @ evaporating temperature',
-   9                                            cp_l 'j/mol.k Liquid heat capacity @ average process temperature' /
+   6      i 'Types of properties'             / vp_e 'Vapour pressure @ evaporating temperature',
+   7                                            vp_c 'Vapour pressure @ condensing temperature',
+   8                                            h_vap 'Heat of vaporisation @ evaporating temperature',
+   9                                            cp_l 'Liquid heat capacity @ average process temperature' /
   10   
   11      g 'group type'                      /  CH3, CH2, CH, C, CH2--CH, CH--CH, CH2--C, CH--C, C--C,
   12                                             CH2--C--CH, ACH, AC, ACCH3, ACCH2, ACCH, OH, ACOH,
@@ -141,138 +141,134 @@ C o m p i l a t i o n
  136      OBJ Objective function
  137   
  138      int_eq  reformulate integer to binary variables
-          pressure1 vapour pressure at evaporating temperature is greater than atmospheric
-          pressure2 vapour pressure at condensing temperature is less than or equal to 14 bar
-          compare1 h_vap to be greater than or equal to that of R134a
-          compare2 cp_l to be less than or equal to that of R134a
- 145      MT_eq  Only can be 1 molecule type
- 146      M_eq   Relate m to binary molecule types
- 147      ARO Relate indicator variable m to number of aromatic groups
- 148      octet   Octet rule - so that there is no free bonds
- 149      unphysical(j)  To prevent unphysical combinations
- 150   
- 151      Tb_eq boiling temperature
- 152      Tcrit_eq critical temperature
- 153      Pcrit_eq critical pressure
- 154      Tcrit_constraint
- 155   
- 156      k_eq vapour pressure eq1
- 157      h_eq vapour pressure eq2
- 158      G_eq vapour pressure eq3
- 159      ln_newvp_er_eq vapour presure of new refrigerant at Te over Tcrit
- 160      ln_newvp_cr_eq vapour pressure of new refrigerant at Tc over Tcrit
- 161      newvp_e vapour pressure of new refrigerant at Te
- 162      newvp_c vapour pressure of new refrigerant at Tc
+ 139      pressure1 vapour pressure at evaporating temperature is greater than atmospheric
+ 140      pressure2 vapour pressure at condensing temperature is less than or equal to 14 bar
+ 141      compare1 h_vap to be greater than or equal to that of R134a
+ 142      compare2 cp_l to be less than or equal to that of R134a
+ 143      MT_eq  Only can be 1 molecule type
+ 144      M_eq   Relate m to binary molecule types
+ 145      ARO Relate indicator variable m to number of aromatic groups
+ 146      octet   Octet rule - so that there is no free bonds
+ 147      unphysical(j)  To prevent unphysical combinations
+ 148   
+ 149      Tb_eq boiling temperature
+ 150      Tcrit_eq critical temperature
+ 151      Pcrit_eq critical pressure
+ 152   
+ 153      k_eq vapour pressure eq1
+ 154      h_eq vapour pressure eq2
+ 155      G_eq vapour pressure eq3
+ 156      ln_newvp_er_eq vapour presure of new refrigerant at Te over Tcrit
+ 157      ln_newvp_cr_eq vapour pressure of new refrigerant at Tc over Tcrit
+ 158      newvp_e vapour pressure of new refrigerant at Te
+ 159      newvp_c vapour pressure of new refrigerant at Tc
+ 160   
+ 161      newh_vap298_eq equation for heat of vaporisation of new refrigerant at 298K
+ 162      newh_vap heat of vaporisation of new refrigerant at Te using Watson eqn
  163   
- 164      newh_vap298_eq equation for heat of vaporisation of new refrigerant at 298K
- 165      newh_vap heat of vaporisation of new refrigerant at Te using Watson eqn
- 166   
- 167      theta_eq theta to be used in CaG cp equation
- 168      omega_eq equation for omega accentric factor
- 169      residualcp_eq equation for residual heat capacity of new refrigerant at Tm
- 170      idealgascp_eq equation for ideal gas heat capacity at Tm
- 171      newcp_l liquid heat capacity of new refrigerant at Tm
+ 164      theta_eq theta to be used in CaG cp equation
+ 165      omega_eq equation for omega accentric factor
+ 166      residualcp_eq equation for residual heat capacity of new refrigerant at Tm
+ 167      idealgascp_eq equation for ideal gas heat capacity at Tm
+ 168      newcp_l liquid heat capacity of new refrigerant at Tm
+ 169   
+ 170      IntCut integer cut constraint
+ 171      eqAux1 at least 2 groups chosen;
  172   
- 173      IntCut integer cut constraint
- 174      eqAux1 at least 2 groups chosen;
+ 173   
+ 174  OBJ..       z =E= pi('cp_l')/ pi('h_vap');
  175   
- 176   
- 177  OBJ..       z =E= pi('cp_l')/ pi('h_vap');
- 178   
- 179  int_eq(g)..    n(g) =E= nL(g) + sum(k$(ord(k) le (Kmax+1)), y(g,k)*(2**(ord(k)-1)));
- 180   
-       
-      pressure1..   P('atm') - pi('vp_e') =L= 0;
-       
-      pressure2..   pi('vp_c') - P('c') =L= 0;
-       
-      compare1..    hfc('h_vap') - pi('h_vap') =L= 0;
-       
-      compare2..    pi('cp_l') - hfc('cp_l') =L= 0;
-       
- 192   
- 193  MT_eq..          sum(mt,w(mt)) =E= 1;
- 194   
- 195  M_eq..           m - (w('a') - w('b')) =E= 0;
+ 176  int_eq(g)..    n(g) =E= nL(g) + sum(k$(ord(k) le (Kmax+1)), y(g,k)*(2**(ord(k)-1)));
+ 177   
+ 178  pressure1..   P('atm') - pi('vp_e') =L= 0;
+ 179   
+ 180  pressure2..   pi('vp_c') - P('c') =L= 0;
+ 181   
+ 182  compare1..    hfc('h_vap') - pi('h_vap') =L= 0;
+ 183   
+ 184  compare2..    pi('cp_l') - hfc('cp_l') =L= 0;
+ 185   
+ 186  MT_eq..          sum(mt,w(mt)) =E= 1;
+ 187   
+ 188  M_eq..           m - (w('a') - w('b')) =E= 0;
+ 189   
+ 190  ARO..         sum(g,n(g) $ (info(g,'t') = 3)) - 6*w('m') - 10*w('b') =E= 0;
+ 191   
+ 192  octet..       sum(g, (2-info(g,'v'))*n(g)) - 2*m =E= 0;
+ 193   
+ 194  unphysical(j)..  n(j)*(info(j,'v') - 1) + 2 - sum(g,n(g)) =L= 0;
+ 195   
  196   
- 197  ARO..         sum(g,n(g) $ (info(g,'t') = 3)) - 6*w('m') - 10*w('b') =E= 0;
+ 197  Tb_eq..       Tb =e= 204.359*log((sum(g,n(g)*info(g,'tb1k'))));
  198   
- 199  octet..       sum(g, (2-info(g,'v'))*n(g)) - 2*m =E= 0;
+ 199  Tcrit_eq..    Tcrit =e= 181.128*log(sum(g,n(g)*info(g,'tc1k')));
  200   
- 201  unphysical(j)..  n(j)*(info(j,'v') - 1) + 2 - sum(g,n(g)) =L= 0;
+ 201  Pcrit_eq..    Pcrit =e= 1.3705 + (sum(g,n(g)*info(g,'pc1k')) + 0.10022)**(-2);
  202   
  203   
- 204  Tb_eq..       Tb =e= 204.359*log((sum(g,n(g)*info(g,'tb1k'))));
+ 204  k_eq..           kvap =e= ((h/Gvap) - (1 + Tb/Tcrit))/((3 + Tb/Tcrit)* (1 - Tb/Tcrit)**2);
  205   
- 206  Tcrit_eq..    Tcrit =e= 181.128*log(sum(g,n(g)*info(g,'tc1k')));
+ 206  h_eq..           h =e= (Tb/Tcrit)*((log(Pcrit)/1.01325)/(1 - Tb/Tcrit));
  207   
- 208  Pcrit_eq..    Pcrit =e= 1.3705 + (sum(g,n(g)*info(g,'pc1k')) + 0.10022)**(-2);
+ 208  G_eq..           Gvap =e= 0.4835 + 0.4605*h;
  209   
- 210  Tcrit_constraint.. Tcrit =G= T('c');
+ 210  ln_newvp_er_eq..  vp_er =e= (-Gvap/(T('e')/Tcrit))*(1 - (T('e')/Tcrit)**2 + kvap*(3 + (T('e')/Tcrit))*power((1 - (T('e')/Tcrit)),3));
  211   
- 212   
- 213  k_eq..           kvap =e= ((h/Gvap) - (1 + Tb/Tcrit))/((3 + Tb/Tcrit)* (1 - Tb/Tcrit)**2);
- 214   
- 215  h_eq..           h =e= (Tb/Tcrit)*((log(Pcrit)/1.01325)/(1 - Tb/Tcrit));
- 216   
- 217  G_eq..           Gvap =e= 0.4835 + 0.4605*h;
+ 212  ln_newvp_cr_eq..  vp_cr =e= (-Gvap/(T('c')/Tcrit))*(1 - (T('c')/Tcrit)**2 + kvap*(3 + (T('c')/Tcrit))*power((1 - (T('c')/Tcrit)),3));
+ 213   
+ 214  newvp_e..      pi('vp_e') =e= exp(vp_er)*Pcrit;
+ 215   
+ 216  newvp_c..      pi('vp_c') =e= exp(vp_cr)*Pcrit;
+ 217   
  218   
- 219  ln_newvp_er_eq..  vp_er =e= (-Gvap/(T('e')/Tcrit))*(1 - (T('e')/Tcrit)**2 + kvap*(3 + (T('e')/Tcrit))*power((1 - (T('e')/Tcrit)),3));
+ 219  newh_vap298_eq.. h_vap298 =e= 6.829 + sum(g,n(g)*(info(g,'hv1k')));
  220   
- 221  ln_newvp_cr_eq..  vp_cr =e= (-Gvap/(T('c')/Tcrit))*(1 - (T('c')/Tcrit)**2 + kvap*(3 + (T('c')/Tcrit))*power((1 - (T('c')/Tcrit)),3));
+ 221  newh_vap..    pi('h_vap') =e= h_vap298*((1-(T('e')/Tcrit))/(1-(T('s')/Tcrit)))**0.375;
  222   
- 223  newvp_e..      pi('vp_e') =e= exp(vp_er)*Pcrit;
- 224   
- 225  newvp_c..      pi('vp_c') =e= exp(vp_cr)*Pcrit;
- 226   
+ 223   
+ 224  theta_eq..    theta =e= (T('m') - 298)/700;
+ 225   
+ 226  omega_eq..    omega =e= 0.4085*(log((sum(g,n(g)*info(g, 'w1k'))) + 1.1507)**(1/0.5050));
  227   
- 228  newh_vap298_eq.. h_vap298 =e= 6.829 + sum(g,n(g)*(info(g,'hv1k')));
+ 228  residualcp_eq..  cp_residual =e= R*(1.586 + 0.49/(1 - ((T('m'))/Tcrit)) + omega*(4.2775 + 6.3*power((1 - ((T('m'))/Tcrit)),(-3))/((T('m'))/Tcrit) + 0.4355/(1 - ((T('m'))/Tcrit))));
  229   
- 230  newh_vap..    pi('h_vap') =e= h_vap298*((1-(T('e')/Tcrit))/(1-(T('s')/Tcrit)))**0.375;
+ 230  idealgascp_eq..  cp_ideal =e= ((sum(g,n(g)*info(g,'cpa1k')) - 19.7779) + ((sum(g,n(g)*info(g,'cpb1k'))) + 22.5981)*theta + ((sum(g,n(g)*info(g,'cpc1k'))) - 10.7983)*power(theta,2));
  231   
- 232   
- 233  theta_eq..    theta =e= (T('m') - 298)/700;
- 234   
- 235  omega_eq..    omega =e= 0.4085*(log((sum(g,n(g)*info(g, 'w1k'))) + 1.1507)**(1/0.5050));
- 236   
- 237  residualcp_eq..  cp_residual =e= R*(1.586 + 0.49/(1 - ((T('m'))/Tcrit)) + omega*(4.2775 + (6.3*power((1 - ((T('m'))/Tcrit)),(-3)))/((T('m'))/Tcrit) + 0.4355/(1 - ((T('m'))/Tcrit))));
- 238   
- 239  idealgascp_eq..  cp_ideal =e= ((sum(g,n(g)*info(g,'cpa1k')) - 19.7779) + ((sum(g,n(g)*info(g,'cpb1k'))) + 22.5981)*theta + ((sum(g,n(g)*info(g,'cpc1k'))) - 10.7983)*power(theta,2));
- 240   
- 241  newcp_l..     pi('cp_l') =e= cp_residual + cp_ideal;
- 242   
- 243  IntCut(c)$(dyn(c)).. sum((g,k),yv(g,k,c)*y(g,k))-sum((g,k),(1-yv(g,k,c))*y(g,k)) =L= sum((g,k),yv(g,k,c)) - 1;
- 244   
- 245  eqAux1.. sum(g,n(g)) =G= 1;
- 246   
- 247  n.lo(g)=nL(g);
- 248  n.up(g)=nU(g);
- 249  n.l('CH3')=2;
- 250  n.l('CH2')=2;
- 251  y.l(g,k) = 0;
- 252  y.l('CH3','k2')=1;
- 253  y.l('CH2','k2')=1;
- 254  pi.l('vp_e') = 3;
- 255  pi.l('vp_c') = 10;
- 256  pi.l('h_vap') = 40;
- 257  pi.l('cp_l') = 100;
- 258  Tb.l = 200;
- 259  Tcrit.l = 400;
- 260  Pcrit.l = 15;
+ 232  newcp_l..     pi('cp_l') =e= cp_residual + cp_ideal;
+ 233   
+ 234  IntCut(c)$(dyn(c)).. sum((g,k),yv(g,k,c)*y(g,k))-sum((g,k),(1-yv(g,k,c))*y(g,k)) =L= sum((g,k),yv(g,k,c)) - 1;
+ 235   
+ 236  eqAux1.. sum(g,n(g)) =G= 1;
+ 237   
+ 238  n.lo(g)=nL(g);
+ 239  n.up(g)=nU(g);
+ 240  n.l(g)=0;
+ 241  n.l('CH3')=2;
+ 242  n.l('CH2')=2;
+ 243  y.l(g,k) = 0;
+ 244  y.l('CH3','k2')=1;
+ 245  y.l('CH2','k2')=1;
+ 246  pi.l('vp_e') = 3;
+ 247  pi.l('vp_c') = 10;
+ 248  pi.l('h_vap') = 40;
+ 249  pi.l('cp_l') = 100;
+ 250  Tb.l = 200;
+ 251  Tcrit.l = 400;
+ 252  Pcrit.l = 15;
+ 253   
+ 254  kvap.l = 1;
+ 255  h.l = 1;
+ 256  Gvap.l = 1;
+ 257  vp_er.l = 5;
+ 258  vp_cr.l = 5;
+ 259   
+ 260  h_vap298.l = 30;
  261   
- 262  kvap.l = 1;
- 263  h.l = 1;
- 264  Gvap.l = 1;
- 265  vp_er.l = 5;
- 266  vp_cr.l = 5;
- 267   
- 268  h_vap298.l = 30;
- 269   
- 270  theta.l = 1;
- 271  omega.l = 1;
- 272  cp_residual.l = 50;
- 273  cp_ideal.l = 50;
- 274   
+ 262  theta.l = 1;
+ 263  omega.l = 1;
+ 264  cp_residual.l = 50;
+ 265  cp_ideal.l = 50;
+ 266   
        
       pi(i)   Property value
       n(g)    Number of selected units of group type g
@@ -298,41 +294,42 @@ C o m p i l a t i o n
       cp_residual Residual heat capacity @ Tm
       cp_ideal Ideal gas heat capacity @ Tm ;
        
+ 294   
+ 295   
+ 296  *Ruzicka method newcp_l..     pi('cp_l') =e= R*(sum(g,n(g)*(info(g,'a'))) + sum(g,n(g)*(info(g,'b')))*0.01*T(m) + sum(g,n(g)*info(g,'d'))*(0.01*T(m))**2);
+ 297   
+ 298  Model CAMD / all /;
+ 299  options MINLP = BARON;
+ 300  *options optcr = 0;
+ 301  *options optca = 0;
  302   
- 303   
- 304  *Ruzicka method newcp_l..     pi('cp_l') =e= R*(sum(g,n(g)*(info(g,'a'))) + sum(g,n(g)*(info(g,'b')))*0.01*T(m) + sum(g,n(g)*info(g,'d'))*(0.01*T(m))**2);
- 305   
- 306  Model CAMD / all /;
- 307  options MINLP = BARON;
- 308  *options optcr = 0;
- 309  *options optca = 0;
- 310   
- 311  dyn(c)=no;
- 312   
- 313  *Integer cut
- 314  yv(g,k,c)=0;
- 315  alias(c,cc);
- 316  *define property to minimise (in PO)
- 317   
- 318  solve CAMD minimising z using MINLP;
- 319   
-      loop(cc,
-               solve CAMD minimising z using MINLP;
-       
-               yv(g,k,cc)=y.l(g,k);
-               nv(g,cc)=n.l(g);
-               zv(cc)=z.l;
-               pv(i,cc)= pi.l(i);
-               dyn(cc)=yes;
-      );
-       
-      display yv,nv,zv,pv;
+ 303  dyn(c)=no;
+ 304   
+ 305  *Integer cut
+ 306  yv(g,k,c)=0;
+ 307  alias(c,cc);
+ 308  *define property to minimise (in PO)
+ 309   
+ 310  *solve CAMD minimising z using MINLP;
+ 311   
+ 312  loop(cc,
+ 313           solve CAMD minimising z using MINLP;
+ 314   
+ 315           yv(g,k,cc)=y.l(g,k);
+ 316           nv(g,cc)=n.l(g);
+ 317           zv(cc)=z.l;
+ 318           pv(i,cc)= pi.l(i);
+ 319           dyn(cc)=yes;
+ 320  );
+ 321   
+ 322  display yv,nv,zv,pv;
+ 323   
 
 
 COMPILATION TIME     =        0.000 SECONDS      3 MB  28.2.0 r750fa45 WEX-WEI
-GAMS 28.2.0  r750fa45 Released Aug 19, 2019 WEX-WEI x86 64bit/MS Windows - 11/29/19 10:12:18 Page 2
+GAMS 28.2.0  r750fa45 Released Aug 19, 2019 WEX-WEI x86 64bit/MS Windows - 11/27/19 14:22:41 Page 2
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Equation Listing    SOLVE CAMD Using MINLP From line 318
+Equation Listing    SOLVE CAMD Using MINLP From line 313
 
 
 ---- OBJ  =E=  Objective function
@@ -350,6 +347,26 @@ int_eq(CH2)..  n(CH2) - y(CH2,k1) - 2*y(CH2,k2) - 4*y(CH2,k3) =E= 0 ; (LHS = 0)
      
 REMAINING 31 ENTRIES SKIPPED
 
+
+---- pressure1  =L=  vapour pressure at evaporating temperature is greater than atmospheric
+
+pressure1..  - pi(vp_e) =L= -1.1 ; (LHS = -3)
+     
+
+---- pressure2  =L=  vapour pressure at condensing temperature is less than or equal to 14 bar
+
+pressure2..  pi(vp_c) =L= 14 ; (LHS = 10)
+     
+
+---- compare1  =L=  h_vap to be greater than or equal to that of R134a
+
+compare1..  - pi(h_vap) =L= -20.353 ; (LHS = -40)
+     
+
+---- compare2  =L=  cp_l to be less than or equal to that of R134a
+
+compare2..  pi(cp_l) =L= 143.4 ; (LHS = 100)
+     
 
 ---- MT_eq  =E=  Only can be 1 molecule type
 
@@ -426,11 +443,6 @@ Pcrit_eq..  - (4.96371210509942)*n(c) + (9.4978722011037)*n(CH3) + (5.0591681071
       + (6.01372812733199)*n(CH3NH) + (4.96371210509942)*n(CH2NH) + (7.58875216068085)*n(CH3N) + (2.338672049518)*n(CH2N) + (17.2298083648163)*n(CH2CN) + (5.48872011621571)*n(COOH) + (1.336384028296)*n(I) - (0.859104018190285)*n(Br)
      
       + (7.06374414956456)*n(CH---C) + (5.29780811217342)*n(CH2S) + Pcrit =E= 1.3705 ; (LHS = -23.4735416146216, INFES = 24.8440416146216 ****)
-     
-
----- Tcrit_constraint  =G=  
-
-Tcrit_constraint..  Tcrit =G= 316 ; (LHS = 400)
      
 
 ---- k_eq  =E=  vapour pressure eq1
@@ -531,24 +543,27 @@ eqAux1..  n(c) + n(CH3) + n(CH2) + n(CH) + n(CH2--CH) + n(CH--CH) + n(CH2--C) + 
      
       + n(CH3NH) + n(CH2NH) + n(CH3N) + n(CH2N) + n(CH2CN) + n(COOH) + n(I) + n(Br) + n(CH---C) + n(CH2S) =G= 1 ; (LHS = 4)
      
-GAMS 28.2.0  r750fa45 Released Aug 19, 2019 WEX-WEI x86 64bit/MS Windows - 11/29/19 10:12:18 Page 3
+GAMS 28.2.0  r750fa45 Released Aug 19, 2019 WEX-WEI x86 64bit/MS Windows - 11/27/19 14:22:41 Page 3
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Column Listing      SOLVE CAMD Using MINLP From line 318
+Column Listing      SOLVE CAMD Using MINLP From line 313
 
 
 ---- pi  Property value
 
 pi(vp_e)
                 (.LO, .L, .UP, .M = 0, 3, +INF, 0)
+       -1       pressure1
         1       newvp_e
 
 pi(vp_c)
                 (.LO, .L, .UP, .M = 0, 10, +INF, 0)
+        1       pressure2
         1       newvp_c
 
 pi(h_vap)
                 (.LO, .L, .UP, .M = 0, 40, +INF, 0)
        (0.0625) OBJ
+       -1       compare1
         1       newh_vap
 
 REMAINING ENTRY SKIPPED
@@ -757,7 +772,6 @@ Tb
 Tcrit
                 (.LO, .L, .UP, .M = 0, 400, +INF, 0)
         1       Tcrit_eq
-        1       Tcrit_constraint
       (-0.0041) k_eq
        (0.0134) h_eq
        (0.0085) ln_newvp_er_eq
@@ -859,16 +873,19 @@ cp_ideal
         1       idealgascp_eq
        -1       newcp_l
 
-GAMS 28.2.0  r750fa45 Released Aug 19, 2019 WEX-WEI x86 64bit/MS Windows - 11/29/19 10:12:18 Page 4
+GAMS 28.2.0  r750fa45 Released Aug 19, 2019 WEX-WEI x86 64bit/MS Windows - 11/27/19 14:22:41 Page 4
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Model Statistics    SOLVE CAMD Using MINLP From line 318
+Model Statistics    SOLVE CAMD Using MINLP From line 313
+
+
+LOOPS                                   cc   1
 
 
 MODEL STATISTICS
 
-BLOCKS OF EQUATIONS          27     SINGLE EQUATIONS           92
+BLOCKS OF EQUATIONS          30     SINGLE EQUATIONS           95
 BLOCKS OF VARIABLES          19     SINGLE VARIABLES          158
-NON ZERO ELEMENTS         1,603     NON LINEAR N-Z            194
+NON ZERO ELEMENTS         1,606     NON LINEAR N-Z            194
 DERIVATIVE POOL              20     CONSTANT POOL             274
 CODE LENGTH                 681     DISCRETE VARIABLES        139
 
@@ -884,6 +901,6 @@ CODE LENGTH                 681     DISCRETE VARIABLES        139
 
      GAMS Development Corporation, USA              G871201/0000CA-ANY
      Free Demo, +1 202-342-0180, support@gams.com, www.gams.com       
-     10525581000S                                                   00
+     10525559000S                                                   00
      01234567000000                                                   
      DC0000       Ref: Generated by Base            A Demo            

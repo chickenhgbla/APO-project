@@ -1,8 +1,8 @@
---- Job script.gms Start 11/28/19 23:21:34 28.2.0 r750fa45 WEX-WEI x86 64bit/MS Windows
+--- Job script.gms Start 11/27/19 14:04:47 28.2.0 r750fa45 WEX-WEI x86 64bit/MS Windows
 --- GAMS Parameters defined
-    Input C:\Users\Tricia\OneDrive - Imperial College London\Attachments\Year 4\Advanced Process Optimisation\APO_Project\script.gms
+    Input D:\OneDrive - Imperial College London\School Work\Year 4\Advanced Process Optimisation\Project\script.gms
     PageSize 0
-    ScrDir C:\Users\Tricia\OneDrive - Imperial College London\Attachments\Year 4\Advanced Process Optimisation\APO_Project\225a\
+    ScrDir D:\OneDrive - Imperial College London\School Work\Year 4\Advanced Process Optimisation\Project\225a\
     SysDir C:\GAMS\win64\28.2\
     LogOption 3
     ErrMsg 1
@@ -13,14 +13,15 @@ GAMS 28.2.0   Copyright (C) 1987-2019 GAMS Development. All rights reserved
 Licensee: GAMS Development Corporation, USA              G871201/0000CA-ANY
           Free Demo, +1 202-342-0180, support@gams.com, www.gams.com DC0000
 --- Starting compilation
---- script.gms(331) 3 Mb
---- Starting execution: elapsed 0:00:00.029
---- script.gms(306) 4 Mb
+--- script.gms(321) 3 Mb
+--- Starting execution: elapsed 0:00:00.008
+--- script.gms(310) 4 Mb
 --- Generating MINLP model CAMD
---- script.gms(317) 6 Mb
----   94 rows  158 columns  1,605 non-zeroes
+--- script.gms(311) 6 Mb
+--- LOOPS cc = 1
+---   95 rows  158 columns  1,606 non-zeroes
 ---   681 nl-code  194 nl-non-zeroes
 ---   139 discrete-columns
 *** Status: Terminated due to a licensing error
 ***         Inspect listing file for more information
---- Job script.gms Stop 11/28/19 23:21:34 elapsed 0:00:00.058
+--- Job script.gms Stop 11/27/19 14:04:47 elapsed 0:00:00.133

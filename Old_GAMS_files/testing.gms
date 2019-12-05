@@ -28,9 +28,7 @@ Set
     
     k binary index /k1*k4/
 
-    c integer cuts /1*2/
-    
-    dyn(c) dynamic set of c
+    c integer cuts /1*9/
     ;
 
 Alias (j,g)
@@ -120,8 +118,31 @@ Parameter
     eq1
     eq2
     eq3
-    eq4(j);
+    eq4(j)
+    
+    yv(g,k,c)
+    LHS(c)
+    RHS(c);
 
+yv('CH3','k1','1')=1;
+yv('Br','k1','1')=1;
+yv('CH3','k1','2')=1;
+yv('CHO','k1','2')=1;
+yv('CH3','k2','3')=1;
+yv('CH2','k2','3')=1;
+yv('CH3','k2','4')=1;
+yv('CH--CH','k1','4')=1;
+yv('CH3','k2','5')=1;
+yv('CH2O','k1','5')=1;
+yv('CH3','k1','6')=1;
+yv('CH2','k1','6')=1;
+yv('CH2--CH','k1','6')=1;
+yv('CH3','k2','7')=1;
+yv('CH2--C','k1','7')=1;
+yv('CH3','k2','8')=1;
+yv('CH3','k1','8')=1;
+yv('CH','k1','8')=1;
+yv('CH2--CH','k2','9')=1;
 
 *nL and nU bounds
 nL(g)=0;
@@ -130,7 +151,8 @@ nU(g)=3;
 *Kmax
 Kmax=smax(g,ceil(log(nU(g)-nL(g))/log(2)));
 
-y('COOH','k2') =1;
+y('CH---C','k1') =1;
+y('CHO','k1') =1;
 
 w('a')=1;
 
@@ -183,7 +205,10 @@ cp_ideal = ((sum(g,n(g)*info(g,'cpa1k')) - 19.7779) + ((sum(g,n(g)*info(g,'cpb1k
 
 pi('cp_l') = cp_residual + cp_ideal;
 
-display pi,theta,omega, cp_ideal,Tcrit,n,Pcrit,eq1,eq2,eq3,eq4,Tb,h,Gvap,kvap,vp_er,vp_cr,cp_residual,h_vap298;
+RHS(c)=sum((g,k),yv(g,k,c)*y(g,k))-sum((g,k),(1-yv(g,k,c))*y(g,k));
+LHS(c)= sum((g,k),yv(g,k,c)) - 1;
+
+display pi,theta,omega, cp_ideal,Tcrit,n,Pcrit,eq1,eq2,eq3,eq4,Tb,h,Gvap,kvap,vp_er,vp_cr,cp_residual,h_vap298,yv,LHS,RHS;
 
 $ontext
    

@@ -250,8 +250,6 @@ options MINLP = ANTIGONE;
 
 solve CAMD minimising z using MINLP;
 
-$ontext
 options MINLP = BARON;
 
 solve CAMD minimising z using MINLP;
-$offtext

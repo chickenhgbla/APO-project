@@ -1,8 +1,8 @@
---- Job new.gms Start 11/30/19 12:14:17 28.2.0 r750fa45 WEX-WEI x86 64bit/MS Windows
+--- Job new.gms Start 11/29/19 02:04:02 28.2.0 r750fa45 WEX-WEI x86 64bit/MS Windows
 --- GAMS Parameters defined
-    Input C:\Users\Tricia\OneDrive - Imperial College London\Attachments\Year 4\Advanced Process Optimisation\APO_Project\new.gms
+    Input D:\OneDrive - Imperial College London\School Work\Year 4\Advanced Process Optimisation\Project\new.gms
     PageSize 0
-    ScrDir C:\Users\Tricia\OneDrive - Imperial College London\Attachments\Year 4\Advanced Process Optimisation\APO_Project\225a\
+    ScrDir D:\OneDrive - Imperial College London\School Work\Year 4\Advanced Process Optimisation\Project\225a\
     SysDir C:\GAMS\win64\28.2\
     LogOption 3
     ErrMsg 1
@@ -13,8 +13,8 @@ GAMS 28.2.0   Copyright (C) 1987-2019 GAMS Development. All rights reserved
 Licensee: GAMS Development Corporation, USA              G871201/0000CA-ANY
           Free Demo, +1 202-342-0180, support@gams.com, www.gams.com DC0000
 --- Starting compilation
---- new.gms(257) 3 Mb
---- Starting execution: elapsed 0:00:00.037
+--- new.gms(255) 3 Mb
+--- Starting execution: elapsed 0:00:00.007
 --- new.gms(249) 4 Mb
 --- Generating MINLP model CAMD
 --- new.gms(251) 6 Mb
@@ -23,4 +23,4 @@ Licensee: GAMS Development Corporation, USA              G871201/0000CA-ANY
 ---   112 discrete-columns
 *** Status: Terminated due to a licensing error
 ***         Inspect listing file for more information
---- Job new.gms Stop 11/30/19 12:14:17 elapsed 0:00:00.071
+--- Job new.gms Stop 11/29/19 02:04:02 elapsed 0:00:00.082
